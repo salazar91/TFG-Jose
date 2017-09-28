@@ -18,11 +18,8 @@ def varc(ag,ap,a):
         #print (a)
 
         tau = ap/ag
-        #print (tau)
-
+        
         #Igual que en la varianza simple
-        #n=len(a[0]) #las columnas ( se podrian quitar las que no tuvieran datos y se quedarian en 6
-        #j=len(a) #Numero de filas
         j,n=a.shape #es lo mismo que las 2 lineas de arriba pero de manera mas eficiente
         #shape coge en una tupla la dimension del array
 
@@ -33,8 +30,7 @@ def varc(ag,ap,a):
 
         qei=a[[i for i in range(j) if not i%2 ==0]]
         qei=np.sum(qei,axis=0)
-        #print (qei)
-
+        
         #print('qoi'.format(qoi))
         #print('qei'.format(qei))
 
@@ -82,13 +78,10 @@ def varc(ag,ap,a):
         #print (C2)
 
         #vn
-
         vn=(((1-tau)**2)/(3-2*tau))* qs
-        #print (vn)
-
+ 
         #varianza
         varc= (1-tau)**2/(tau**4 * (2-tau))/6 * (3*(C0 - vn) -4*C1 + C2) + vn/tau**4
-        #print (varc)
         return (varc)
 
 
@@ -99,7 +92,7 @@ def tras(matriz,ag,ap):
         #print (vc1)
         #print (matt)
         #print (matriz)
-        vc2=varc(250,50,matt) #calcula la varianza de la matriz traspuesta
+        vc2=varc(ag,ap,matt) #calcula la varianza de la matriz traspuesta
         #print (vc2)
         vc= (vc1+vc2)/2 #hace la media de las 2
         return (vc)
