@@ -48,21 +48,28 @@ archivo.close()  # Cierra archivo
 
 #tienes que mirar el x mas pequeño y el y mas pequeño para empezar a contar tus cuadrados
 minx=np.amin(coordenadas [:,0]) #axis?
-miny=np.amin(coordenadas [0,:])
+miny=np.amin(coordenadas [:,1])
 maxx= np.amax(coordenadas [:,0])
-maxy= np.amax(coordenadas [0,:])
+maxy= np.amax(coordenadas [:,1])
+#print (maxx)
+#print (maxy)
 #print (minx)
 #print (miny)
 
 #Transformar coordenadas para que empeicen en 0
-coordenadas[:,0]=coordenadas[:,0]-minx
-coordenadas[:,1]= coordenadas[:,1]-miny
+coordenadas= coordenadas - np.array([minx,miny]) 
+#coordenadas[:,0]=coordenadas[:,0]-minx
+#coordenadas[:,1]= coordenadas[:,1]-miny
 print (coordenadas)
+
+#print (maxy)
+#print (miny)
+maxx=maxx-minx
+maxy=maxy-miny
 
 minx=0
 miny=0
-maxx=maxx-minx
-maxy=maxy-miny
+
 
 ag=125
 ap=25
@@ -74,45 +81,45 @@ puntos= len (coordenadas)
 
 #print (coordenadas[:,0])
 #Como guardar los puntos en la matriz
-cont=1
+contp=1#contador prueba
 #necesito auxiliar para volver al minx y miny
 minxaux=minx
 minyaux=miny
 
-while minxaux<maxx:
-        
-        for i in coordenadas: #Mirar todos los puntos
-                #print (cont)
-                #print (i[0])
-                #print (minx+ag)
+#print (maxy)
+filas =int (maxy//ag)+1 #
+columnas =int (maxx//ag)+1
 
-                #print (i[1])
-                #print (miny+ag)
-                #cont = cont+1
-        
-        
-                if i[0] < minxaux+ag and i[1] < minyaux+ag and i[0]>= minxaux and i[1] >= minyaux :
-                        print (cont)
+#Creo la matriz final
+matrix=np.zeros((filas, columnas))
+print (matrix)
 
-                        print (i)
-                        puntos=puntos-1
-                        cont=cont+1
+#while minxaux<maxx: # minyaux<maxy:
+for y in range(columnas):
+        for x in range (filas):
+                print ("X")
 
-                if minaux+ag==minaux+ag:
+                print (minxaux)
+                print ("Y")
+                print (minyaux)
+                
+
+                for i in coordenadas:
+                        if i[0]>= minxaux and i[0]<minxaux+ag and i[1]>=minyaux and i[1]<minyaux+ag:
+                                #print (contp)
+                                print (i)
+                                contp= contp+1
+                                matrix[x][y]=matrix[x][y] +1
+                minyaux=minyaux+ag
                         
-
         
-                        
+        
+        minyaux=miny
+        minxaux=minxaux+ag
         
 
-        
-"""
-while puntos:
-        for i in coordenadas[] :
-                print (i)
-                if i[0,:]< minx+ag and i[:,0]< miny+ag:
-                        print (i)
+print (matrix)
 
-        print (puntos)
-        puntos=puntos-1
-"""
+#from varcompuestav3 import varc
+#import varcompuestav3 as vcomp
+#print (varc(ag, ap, matrix))
