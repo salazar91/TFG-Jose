@@ -59,7 +59,7 @@ print (maxy)
 
 
 ag=125
-ap=25 #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
+ap=30 #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
 
 #print (maxy)
 filas =int (maxy//ag)+1 #
@@ -91,9 +91,14 @@ for y in range(columnas):
                 #print (minxaux)
                 #print ("Y")
                 #print (minyaux)
+                indices= tree.query_ball_point ([cpx,cpy], ap/2, np.inf)
+                puntos=0
+                for i in indices:
+                        ptemp= coordenadas[i]
+                        if ptemp[1] != cpy-ap/2 and ptemp[0] != cpx-ap/2:
+                                puntos = puntos +1
 
-                puntos= len((tree.query_ball_point ([cpx,cpy], ap/2, np.inf)))
-              
+                
                 matrix[x][y]=matrix[x][y] +puntos
 
                 cpy=cpy+ag
