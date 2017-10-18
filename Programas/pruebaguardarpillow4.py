@@ -11,13 +11,13 @@ from PIL import Image
 from random import randint
 import numpy as np
 from scipy import spatial
-import os
+import glob,os
 
 os.mkdir("Recortes") #Creo el directorio para meter las fotos
 
-rutafoto = 'c:\\Users\\User\\Desktop\\portero.jpg'
-im = Image.open(rutafoto)
+rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
 
+im = Image.open(rutafoto)
 ag=125
 ap=25
 
@@ -26,6 +26,14 @@ form, tam, mod = (im.format, im.size, im.mode)
 print (tam)
 maxx , maxy = tam
 #print (x)
+
+#tamaux= np.array(tam)
+
+#Creo la foto que sera el collage
+new_im=Image.new("RGB", (tam[0]+500,tam[1]+500) ) #Creo la imagen
+ims = [] #Meto los recortes en este array
+
+
 
 filas =int (maxy//ag)+1 #
 columnas =int (maxx//ag)+1
@@ -48,6 +56,26 @@ for y in range(columnas):
                 cpy=cpy+ag
         cpy=cpyaux
         cpx=cpx+ag
+
+for infile in glob.glob("Recortes\\*.jpg"):
+        print (infile)
+        im = Image.open(infile)
+        im.thumbnail(tam)
+        ims.append(im)
+#print (ims)
+i = 0
+x = 0
+y = 0
+for col in range(columnas):
+        for row in range(filas):
+            print(i, x, y)
+            new_im.paste(ims[i], (x, y))
+            i += 1
+            y += ag +15
+        x += ag + 15
+        y = 0
+
+new_im.save ("tatata.jpg")
                 
 #im.show()
 
