@@ -67,7 +67,9 @@ columnas =int (maxx//ag)+1
 
 #Creo la matriz final
 matrix=np.zeros((filas, columnas))
-print (matrix)
+#print (matrix)
+
+array_matrices=[] #para guardar todas las matrices y poder hacer la media al final
 
 #Coloco el cuadrado pequeño en todos los puntos del cuadrado grande
 for i in range(ag-ap):
@@ -88,19 +90,31 @@ for i in range(ag-ap):
                 for y in range(columnas):
                         for x in range (filas):
                                 
-                                #print (minxaux)
-                                #print ("Y")
-                                #print (minyaux)
+                                indices= tree.query_ball_point ([cpx,cpy], ap/2, np.inf)
+                                puntos=0
+                                for i3 in indices:
+                                        ptemp= coordenadas[i3]
+                                        if ptemp[1] != cpy-ap/2 and ptemp[0] != cpx-ap/2:
+                                                puntos = puntos +1
 
-                                #puntos= len((tree.query_ball_point ([cpx,cpy], ap/2, np.inf)))
-                                #matrix[x][y]=matrix[x][y] +puntos
+                
+                                matrix[x][y]=matrix[x][y] +puntos
 
                                 cpy=cpy+ag
       
         
                         cpy=cpyaux
                         cpx=cpx+ag
+
+                
         
 
                 #print (matrix)
+                array_matrices.append(matrix)
+                matrix=np.zeros((filas, columnas)) #reinicio la matriz
+
+
+matrizmedia= np.mean(array_matrices, axis=0)
+#print(array_matrices)
+print (matrizmedia) 
 
