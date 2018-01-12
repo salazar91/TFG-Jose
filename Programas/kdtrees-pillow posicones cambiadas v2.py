@@ -20,9 +20,9 @@ patron = re.compile(r'\s+')
 
 # Abre archivo en modo lectura
 
-archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\roi1.dat','r')
+archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\annPoints_Iribar.dat','r')
 
-rutafoto = 'c:\\Users\\User\\Desktop\\portero.jpg'
+rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
 im = Image.open(rutafoto)
 
 
@@ -58,8 +58,8 @@ print (maxx)
 print (maxy)
 
 
-ag=125
-ap=25 #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
+ag=250
+ap=50 #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
 
 #print (maxy)
 filas =int (maxy//ag)+1 #
@@ -69,7 +69,7 @@ columnas =int (maxx//ag)+1
 matrix=np.zeros((filas, columnas))
 #print (matrix)
 
-array_matrices=[] #para guardar todas las matrices y poder hacer la media al final
+array_permat=[] #para guardar las personas en cada matriz y poder hacer la media al final
 
 #Coloco el cuadrado pequeño en todos los puntos del cuadrado grande
 for i in range(ag-ap):
@@ -87,6 +87,7 @@ for i in range(ag-ap):
                 cpyaux=cpy #para volver a la posicion
                 cont=0 #contador para guardar las imagenes
                 #Voy recorriendo la matriz
+                contper=0 #Cuenta las personas de cada matriz para luego sacar la media final de todas
                 for y in range(columnas):
                         for x in range (filas):
                                 
@@ -98,7 +99,7 @@ for i in range(ag-ap):
                                                 puntos = puntos +1
 
                 
-                                matrix[x][y]=matrix[x][y] +puntos
+                                contper=contper +puntos
 
                                 cpy=cpy+ag
       
@@ -110,11 +111,11 @@ for i in range(ag-ap):
         
 
                 #print (matrix)
-                array_matrices.append(matrix)
-                matrix=np.zeros((filas, columnas)) #reinicio la matriz
+                array_permat.append(contper)
+                contper=0
+                #matrix=np.zeros((filas, columnas)) #reinicio la matriz
 
 
-matrizmedia= np.mean(array_matrices, axis=0)
-#print(array_matrices)
-print (matrizmedia) 
-
+media= np.mean(array_permat) * (ag)**2/(ap)**2
+varia= np.var(array_permat) * ((ag)**2/(ap)**2)**2
+print (media,varia)

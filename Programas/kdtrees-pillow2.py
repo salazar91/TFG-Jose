@@ -20,9 +20,9 @@ patron = re.compile(r'\s+')
 
 # Abre archivo en modo lectura
 
-archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\roi1.dat','r')
+archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\annPoints_Iribar.dat','r')
 
-rutafoto = 'c:\\Users\\User\\Desktop\\portero.jpg'
+rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
 im = Image.open(rutafoto)
 
 
@@ -58,8 +58,8 @@ print (maxx)
 print (maxy)
 
 
-ag=125
-ap=30 #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
+ag=250
+ap=50 #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
 
 #print (maxy)
 filas =int (maxy//ag)+1 #
@@ -109,5 +109,6 @@ for y in range(columnas):
         
 
 print (matrix)
-
-
+puntosm=np.sum(matrix) * (ag)**2/(ap)**2 #Calculo de puntos que habria en toda la foto sabiendo los que hemos calculado en el cuadrado pequeño
+print (puntosm)
+#Calcular aqui la varianza?

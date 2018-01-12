@@ -18,7 +18,7 @@ patron = re.compile(r'\s+')
 
 # Abre archivo en modo lectura
 
-archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\roi1.dat','r')
+archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\annPoints_Iribar.dat','r')
 """cad1 = obj.read(9)
 cad2 = obj.read()
 print (cad1)
@@ -71,8 +71,8 @@ minx=0
 miny=0
 
 
-ag=125
-ap=25
+ag=250
+ap=50
 
 #Tirar cuadrados hasta que esten todos los puntos contados
 
@@ -120,6 +120,7 @@ for y in range(columnas):
 
 print (matrix)
 
+#llamar a var compuesta4
 #from varcompuestav3 import varc
 #import varcompuestav3 as vcomp
 #print (varc(ag, ap, matrix))
