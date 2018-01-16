@@ -1,24 +1,33 @@
 #https://relopezbriega.github.io/blog/2015/07/19/expresiones-regulares-con-python/
 # importando el modulo de regex de python
+
 import re
 import pickle, sys
+#DOMINGO: He importado product
+from itertools import product
+'''
 f = open('c:\\Users\\user\\object','rb')
 s = pickle.load(f)
 for directorio in s:
 	sys.path.append(directorio)
 from numpy import array
-
+'''
 
 
 import numpy as np
-
+from numpy import array
 coordenadas =[]
 # compilando la regex
 patron = re.compile(r'\s+')
-
+# DOMINGO: Los directorios hay que definirlos con metodos.
+directorio_datos = os.path.abspath(os.path.join(os.getcwd(),"Datos"))
+archivo = open(os.path.join(directorio_datos,"annPoints_Iribar.dat"),'r')
 # Abre archivo en modo lectura
 
-archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\annPoints_Iribar.dat','r')
+# archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\annPoints_Iribar.dat','r')
+
+
+
 """cad1 = obj.read(9)
 cad2 = obj.read()
 print (cad1)
@@ -70,7 +79,7 @@ maxy=maxy-miny
 minx=0
 miny=0
 
-
+#DOMINGO: habría que cambiar esto y darles otros nombres
 ag=250
 ap=50
 
@@ -91,34 +100,26 @@ filas =int (maxy//ag)+1 #
 columnas =int (maxx//ag)+1
 
 #Creo la matriz final
-matrix=np.zeros((filas, columnas))
+
 print (matrix)
+#DOMINGO: he creado una función y he mejorado el código.
 
 #while minxaux<maxx: # minyaux<maxy:
-for y in range(columnas):
-        for x in range (filas):
-                print ("X")
 
-                print (minxaux)
-                print ("Y")
-                print (minyaux)
-                
-
+def matriz_rejilla(coordenadas, ag, ap, point):
+        minxaux=np.amin(coordenadas [:,0]) #axis?
+        minyaux=np.amin(coordenadas [:,1])
+        filas= int(np.amax(coordenadas [:,0])//ag) +1
+        columnas= int(np.amax(coordenadas [:,1])//ag) +1
+        matrix=np.zeros((filas, columnas))
+        for x,y in product(range(filas),range(columnas)):
+                position = array(point) + array([x*ag, y*ag])
                 for i in coordenadas:
-                        if i[0]>= minxaux and i[0]<minxaux+ag and i[1]>=minyaux and i[1]<minyaux+ag:
-                                #print (contp)
-                                print (i)
-                                contp= contp+1
-                                matrix[x][y]=matrix[x][y] +1
-                minyaux=minyaux+ag
+                        if position[0]<=i[0]<position[0]+ap and position[1]<=i[1]<position[1]+ap:
+                                matrix[x][y] += 1
                         
-        
-        
-        minyaux=miny
-        minxaux=minxaux+ag
-        
+        return matrix
 
-print (matrix)
 
 #llamar a var compuesta4
 #from varcompuestav3 import varc
