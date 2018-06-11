@@ -4,7 +4,7 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
-from kivy.graphics import Color, Ellipse
+from kivy.graphics import Color, Ellipse, Rectangle
 
 
 import os
@@ -56,14 +56,13 @@ class MyPaintWidget(Widget):
 	conjunto = set()
 	def on_touch_down(self, touch):
 		with self.canvas:
-			self.canvas.source= "mario.png"
 			Color(1, 1, 0)
 			print("TOuch %.2f %.2f"%( touch.x,touch.y))
 			self.conjunto.add((touch.x,touch.y))
 			d = 10.
 			Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+			Rectangle(source="mario.png")
 			print(self.conjunto)
-
 
 class Editor(App):
 #	pass
