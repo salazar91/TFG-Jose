@@ -16,11 +16,18 @@ Root:
 
         BoxLayout:
 		    Image:
+				id: mario
+				size_hint_y: None
+				size_hint_x: None
 				pos: 200, 300
-				size: 50, 50       
+				size: 250, 50       
         		source: 'mario.png'
                 allow_stretch: True
 				keep_ratio: False
+				
+			Button:
+                text: "Next"
+                on_release: 
 
             
 <LoadDialog>:
