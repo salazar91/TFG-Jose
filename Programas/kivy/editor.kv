@@ -15,19 +15,54 @@ Root:
                 on_release: root.show_save()
 
         BoxLayout:
+		    size_hint_y: None
+			size_hint_x: None
+			height: 30
+			
+		BoxLayout:
+			BoxLayout:
+				size_hint_y: None
+				size_hint_x: None
+				
 		    Image:
 				id: mario
 				size_hint_y: None
 				size_hint_x: None
-				pos: 200, 300
-				size: 250, 50       
+				size: 600, 400 
+				pos: 200, 300				
         		source: 'mario.png'
                 allow_stretch: True
 				keep_ratio: False
 				
+			BoxLayout:
+                size_hint_y: None
+				size_hint_x: None 
+				
+		BoxLayout:
+		    size_hint_y: None
+			size_hint_x: None
+			height: 30		
+				
+		BoxLayout:
+			size_hint_y: None
+			height: 50
+			
+			BoxLayout:
+							
+			BoxLayout:
+				
 			Button:
-                text: "Next"
-                on_release: 
+				text: "Next"
+				on_release: 
+				
+			BoxLayout:
+				size_hint_x: None
+				
+		
+		BoxLayout:
+		    size_hint_y: None
+			size_hint_x: None
+			height: 30
 
             
 <LoadDialog>:
@@ -40,7 +75,7 @@ Root:
 
         BoxLayout:
             size_hint_y: None
-            height: 30
+            height: 10
             Button:
                 text: "Cancel"
                 on_release: root.cancel()
