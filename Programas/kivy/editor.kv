@@ -23,7 +23,10 @@ Root:
 			BoxLayout:
 				size_hint_y: None
 				size_hint_x: None
-				
+		
+			
+
+			
 		    Image:
 				id: mario
 				size_hint_y: None
@@ -33,6 +36,10 @@ Root:
         		source: 'mario.png'
                 allow_stretch: True
 				keep_ratio: False
+				MyPaintWidget:
+					size_hint_y: None
+					size_hint_x: None
+
 				
 			BoxLayout:
                 size_hint_y: None
@@ -53,7 +60,7 @@ Root:
 				
 			Button:
 				text: "Next"
-				on_release: 
+				on_release: root.siguiente() 
 				
 			BoxLayout:
 				size_hint_x: None

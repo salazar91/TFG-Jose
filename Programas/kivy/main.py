@@ -4,11 +4,15 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
+from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Rectangle
 
 
 import os
 
+#class Boton(Button):
+	
+	
 
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
@@ -25,6 +29,7 @@ class Root(FloatLayout):
     loadfile = ObjectProperty(None)
     savefile = ObjectProperty(None)
     text_input = ObjectProperty(None)
+    #contador =0
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -51,6 +56,12 @@ class Root(FloatLayout):
             stream.write(self.text_input.text)
 
         self.dismiss_popup()
+		
+    def siguiente(self):
+	    self.ids["mario"].source="portero.jpg"
+	#   contador +=1
+
+	
 
 class MyPaintWidget(Widget):
 	conjunto = set()
@@ -65,9 +76,9 @@ class MyPaintWidget(Widget):
 			print(self.conjunto)
 
 class Editor(App):
-#	pass
-	def build(self):
-		return MyPaintWidget()
+	pass
+#	def build(self):
+#		return MyPaintWidget()
 
 
 
