@@ -83,7 +83,7 @@ for i in range(ag-ap):
                 #print (cpx,cpy)
                 cpx= cpx + ap/2
                 cpy= cpy + ap/2
-                print (cpx,cpy)
+                #print (cpx,cpy)
                 cpyaux=cpy #para volver a la posicion
                 cont=0 #contador para guardar las imagenes
                 #Voy recorriendo la matriz

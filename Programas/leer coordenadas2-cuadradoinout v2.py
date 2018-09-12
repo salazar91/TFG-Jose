@@ -2,20 +2,19 @@
 # importando el modulo de regex de python
 
 import re
-import pickle, sys
+import pickle, sys, os
 #DOMINGO: He importado product
 from itertools import product
-'''
+
 f = open('c:\\Users\\user\\object','rb')
 s = pickle.load(f)
 for directorio in s:
 	sys.path.append(directorio)
 from numpy import array
-'''
 
 
-import numpy as np
-from numpy import array
+
+
 coordenadas =[]
 # compilando la regex
 patron = re.compile(r'\s+')
@@ -26,6 +25,8 @@ archivo = open(os.path.join(directorio_datos,"annPoints_Iribar.dat"),'r')
 
 # archivo = open('c:\\Users\\User\\Desktop\\TFG\Datos\\datos (1)\\annPoints_Iribar.dat','r')
 
+import numpy as np
+from numpy import array
 
 
 """cad1 = obj.read(9)
@@ -100,11 +101,13 @@ filas =int (maxy//ag)+1 #
 columnas =int (maxx//ag)+1
 
 #Creo la matriz final
-
-print (matrix)
+#matrix=np.zeros((filas, columnas))
+#print (matrix)
 #DOMINGO: he creado una función y he mejorado el código.
 
 #while minxaux<maxx: # minyaux<maxy:
+
+puntos = np.array(coordenadas)
 
 def matriz_rejilla(coordenadas, ag, ap, point):
         minxaux=np.amin(coordenadas [:,0]) #axis?
@@ -121,7 +124,11 @@ def matriz_rejilla(coordenadas, ag, ap, point):
         return matrix
 
 
+
+
+matriz = (matriz_rejilla(puntos,ag, ap, (0,0)))
+
 #llamar a var compuesta4
-#from varcompuestav3 import varc
-#import varcompuestav3 as vcomp
-#print (varc(ag, ap, matrix))
+from varcompuestav4 import varc
+import varcompuestav4 as vcomp
+print (varc(ag, ap, matriz))
