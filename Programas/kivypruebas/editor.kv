@@ -10,9 +10,9 @@ Root:
             Button:
                 text: 'Load'
                 on_release: root.show_load()
-            Button:
-                text: 'Save'
-                on_release: root.show_save()
+            #Button:
+                #text: 'Save'
+                #on_release: root.show_save()
 
         BoxLayout:
 		    size_hint_y: None
@@ -33,12 +33,16 @@ Root:
 				size_hint_x: None
 				size: 600, 400 
 				pos: 200, 300				
-        		source: 'mario.png'
+        		source: 'fondo.jpg'
                 allow_stretch: True
 				keep_ratio: False
 				MyPaintWidget:
+				    id: lienzo
 					size_hint_y: None
 					size_hint_x: None
+					size: 600, 400 
+				    pos: 100, 110
+					pinta: False
 
 				
 			BoxLayout:

@@ -13,9 +13,9 @@ import numpy as np
 from scipy import spatial
 import glob,os
 
-rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
-ag=500
-ap=25
+#rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
+#ag=500
+#ap=25
 
 def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la ruta?
     os.mkdir("Recortes") #Creo el directorio para meter las fotos
@@ -57,6 +57,7 @@ def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la rut
                 cpy=cpy+ag
         cpy=cpyaux
         cpx=cpx+ag
+    numero_imagenes= cont
 
     for infile in glob.glob("Recortes\\*.jpg"):
         print (infile)
@@ -77,6 +78,8 @@ def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la rut
         y = 0
 
     new_im.save ("collage.jpg")
+    print (numero_imagenes)
+    return numero_imagenes
                 
 	#im.show()
 
