@@ -1,9 +1,9 @@
 import re
 import pickle, sys
-f = open('c:\\Users\\user\\object','rb')
-s = pickle.load(f)
-for directorio in s:
-	sys.path.append(directorio)
+# f = open('c:\\Users\\user\\object','rb')
+# s = pickle.load(f)
+# for directorio in s:
+# 	sys.path.append(directorio)
 from numpy import array
 
 
@@ -14,7 +14,7 @@ from scipy import spatial
 import glob,os
 
 #rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
-#ag=500
+#ag=250
 #ap=25
 
 def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la ruta?

@@ -14,7 +14,8 @@ import os
 
 #class Boton(Button):
 
-
+class SimplePopup(Popup):
+    pass
 	
 
 class LoadDialog(FloatLayout):
@@ -50,32 +51,33 @@ class Root(FloatLayout):
 		self._popup.open()
 	
 	def load(self, path, filename):
-		print(filename[0])
-		extension = os.path.splitext(filename[0])[1] #Para coger la extension (Con el import os)
-		print (extension)
-		#*****************
-		#Si la extension no es jpg, pasarlo a jpg (el nombre y la imagen)
-		#if extension != ".jpg":
-		#
-		#
-		#
-		#
-		#*****************	
-			
-			
-			
-		self.ids["mario"].source=filename[0]
-		self.ids["var_text"].text= "20"
-	    
-		self.dismiss_popup()
-		
-		rutafoto = (filename[0])
-		ag = int(input("Area Grande: "))
-		#ag=500
-		ap = int(input("Area Pequeña: "))
-		#ap=25
-		#self.ids["lienzo"].pinta=True
-		self.numero_imagenes=recortar_imagen(ag, ap, rutafoto)
+            print(filename[0])
+            extension = os.path.splitext(filename[0])[1] #Para coger la extension (Con el import os)
+            print (extension)
+            #*****************
+            #Si la extension no es jpg, pasarlo a jpg (el nombre y la imagen)
+            #if extension != ".jpg":
+            #
+            #
+            #
+            #
+            #*****************	
+
+
+
+            self.ids["mario"].source=filename[0]
+            self.ids["var_text"].text= "20"
+
+            self.dismiss_popup()
+            pops= SimplePopup()
+            pops.open()
+            rutafoto = (filename[0])
+            ag = int(input("Area Grande: "))
+            #ag=500
+            ap = int(input("Area Pequeña: "))
+            #ap=25
+            #self.ids["lienzo"].pinta=True
+            self.numero_imagenes=recortar_imagen(ag, ap, rutafoto)
     
 
 	def save(self, path, filename):
@@ -85,15 +87,16 @@ class Root(FloatLayout):
 		self.dismiss_popup()
 		
 	def siguiente(self):
-		if self.contador < self.numero_imagenes:
-			self.ids["mario"].source="C:\\Users\\User\\Documents\\GitHub\\TFG-Jose\\Programas\\kivypruebas\\Recortes\\recorte"+str(self.contador)+".jpg"
-			self.contador +=1
-			print (self.contador)
-			#self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
-			
-		if self.contador == 1:
-			#print ("Hola")
-			self.ids["lienzo"].pinta=True
+            self.ids["lienzo"].canvas.clear()
+            if self.contador < self.numero_imagenes:
+                    self.ids["mario"].source=f"./{str(self.contador)}.jpg"
+                    self.contador +=1
+                    print (self.contador)
+                    #self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
+
+            if self.contador == 1:
+                    #print ("Hola")
+                    self.ids["lienzo"].pinta=True
 		
 
 	
