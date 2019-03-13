@@ -15,6 +15,9 @@ import os
 ruta= "."
 ruta= os.path.join(ruta,"Recortes")
 
+matrix=[]
+print ("matrix")
+
 #class Boton(Button):
 
 
@@ -72,6 +75,8 @@ class Root(FloatLayout):
 	    
 		self.dismiss_popup()
 		
+		#Hacer aqui el pop up del area pequeña
+		
 		rutafoto = (filename[0])
 		ag = int(input("Area Grande: "))
 		#ag=500
@@ -79,7 +84,8 @@ class Root(FloatLayout):
 		#ap=25
 		#self.ids["lienzo"].pinta=True
 		self.numero_imagenes, self.filas, self.columnas=recortar_imagen(ag, ap, rutafoto)
-		self.matrix=np.zeros((self.filas, self.columnas)) #
+		matrix=np.zeros((self.filas, self.columnas)) #
+		print(matrix)
 		
     
 
@@ -112,6 +118,10 @@ class Root(FloatLayout):
 class MyPaintWidget(Widget):
 	conjunto = set()
 	contador=0
+	#fila=0
+	#col=0
+	
+	
 	def on_touch_down(self, touch):
 		with self.canvas:
 			Color(1, 1, 0)
@@ -121,10 +131,19 @@ class MyPaintWidget(Widget):
 			    self.conjunto.add((touch.x,touch.y))
 			    d = 10.
 			    Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
-			#Color(0, 0, 0) #Para quitar el amarillo del mario
-			#Rectangle()#(source="mario.png")
-			#print(self.conjunto)
-			print(self.nec,self.nec2)
+			    fila=int(self.nec/self.nec2) #Me quedo con la parte entera
+			    col= self.nec%self.nec2
+			    print(fila,col)
+			    print(matrix)
+			    matrix[fila][col]+=1 #matrix[fila][col]+ 1
+			    
+				#Color(0, 0, 0) #Para quitar el amarillo del mario
+				#Rectangle()#(source="mario.png")
+				#print(self.conjunto)
+			#print(fila,col)
+			print(matrix)
+		
+			#print(self.nec,self.nec2)
 
 class Editor(App):
 	pass
