@@ -40,8 +40,9 @@ def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la rut
 	columnas =int (maxx//ag)+1
 
 	print (filas, columnas)
-	cpx=0
-	cpy=0
+	#Coloco el cuadrado peque�o en un determinado punto del cuadrado grande
+	cpx =randint(0, ag -1 - ap) #El -1 es para que no coincida con el comienazo del siguiente cuadrado grande
+	cpy =randint(0, ag -1 - ap)
 	cpyaux=cpy
 	
 	cont=0
@@ -54,7 +55,7 @@ def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la rut
 			a=str(x)
 			b=str(y)
 			cont= cont +1
-			box = (cpx, cpy, cpx+ag, cpy+ag)
+			box = (cpx, cpy, cpx+ap, cpy+ap)
 			region = im.crop(box)
 			region.save('Recortes\\recorte'+a+'_'+b+'.jpg')
 			#print (cont)

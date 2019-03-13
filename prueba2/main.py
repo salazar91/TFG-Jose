@@ -79,6 +79,8 @@ class Root(FloatLayout):
 		#ap=25
 		#self.ids["lienzo"].pinta=True
 		self.numero_imagenes, self.filas, self.columnas=recortar_imagen(ag, ap, rutafoto)
+		self.matrix=np.zeros((self.filas, self.columnas)) #
+		
     
 
 	def save(self, path, filename):
@@ -88,7 +90,13 @@ class Root(FloatLayout):
 		self.dismiss_popup()
 		
 	def siguiente(self):
+		self.ids["lienzo"].canvas.clear()
+		self.ids["lienzo"].nec=self.contador
+		self.ids["lienzo"].nec2=self.columnas
+							
+							
 		if self.contador < self.numero_imagenes:
+			
 			self.ids["mario"].source=os.path.join(ruta,f"recorte{self.contador//self.columnas}_{self.contador%self.columnas}.jpg")
 			self.contador +=1
 			print (self.contador)
@@ -115,7 +123,8 @@ class MyPaintWidget(Widget):
 			    Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 			#Color(0, 0, 0) #Para quitar el amarillo del mario
 			#Rectangle()#(source="mario.png")
-			print(self.conjunto)
+			#print(self.conjunto)
+			print(self.nec,self.nec2)
 
 class Editor(App):
 	pass
