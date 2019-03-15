@@ -7,16 +7,21 @@ from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Rectangle
 from  pruebaguardarpillow5 import *
+from  calculavarianzacompuesta import *
 import shutil # Libreria para borrar los recortes
 		
 
 import os
+
 
 ruta= "."
 ruta= os.path.join(ruta,"Recortes")
 
 matrix=[]
 print ("matrix")
+numimagenactual =0 #El anterior contador de la imagen por la que ibamos no la pongo porque da fallos extranhos
+columnas=0 
+filas=0
 
 #class Boton(Button):
 
@@ -75,16 +80,24 @@ class Root(FloatLayout):
 	    
 		self.dismiss_popup()
 		
-		#Hacer aqui el pop up del area pequeña
+		#Hacer aqui el pop up del area pequena
 		
 		rutafoto = (filename[0])
-		ag = int(input("Area Grande: "))
+		
+		datosfoto= devolverancho(rutafoto) #retorno los datos de la imagen
+		ancho=(datosfoto[0])
+		print (ancho)
+		ag = int(ancho/6) #se puede cambiar ese 6 por el numero de columnas 
+		#ag = int(input("Area Grande: "))
 		#ag=500
 		ap = int(input("Area PequeÃ±a: "))
 		#ap=25
 		#self.ids["lienzo"].pinta=True
-		self.numero_imagenes, self.filas, self.columnas=recortar_imagen(ag, ap, rutafoto)
-		matrix=np.zeros((self.filas, self.columnas)) #
+		global filas
+		global columnas
+		self.numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
+		global matrix
+		matrix=np.zeros((filas, columnas)) #
 		print(matrix)
 		
     
@@ -97,24 +110,29 @@ class Root(FloatLayout):
 		
 	def siguiente(self):
 		self.ids["lienzo"].canvas.clear()
-		self.ids["lienzo"].nec=self.contador
-		self.ids["lienzo"].nec2=self.columnas
+		
+		global numimagenactual				
+		global columnas
 							
-							
-		if self.contador < self.numero_imagenes:
+		if numimagenactual < self.numero_imagenes:
 			
-			self.ids["mario"].source=os.path.join(ruta,f"recorte{self.contador//self.columnas}_{self.contador%self.columnas}.jpg")
-			self.contador +=1
-			print (self.contador)
+			self.ids["mario"].source=os.path.join(ruta,f"recorte{numimagenactual//columnas}_{numimagenactual%columnas}.jpg")
+			numimagenactual +=1
+			print (numimagenactual , self.numero_imagenes)
 			#self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
 			
-		if self.contador == 1:
+		if numimagenactual == 1:
 			#print ("Hola")
 			self.ids["lienzo"].pinta=True
+			
+		if numimagenactual == self.numero_imagenes:
+			print ("calcular varianza")
+			self.varianza=tras(matrix,ag,ap)
+			print (self.varianza)
+			#Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
 		
 
 	
-
 class MyPaintWidget(Widget):
 	conjunto = set()
 	contador=0
@@ -131,9 +149,10 @@ class MyPaintWidget(Widget):
 			    self.conjunto.add((touch.x,touch.y))
 			    d = 10.
 			    Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
-			    fila=int(self.nec/self.nec2) #Me quedo con la parte entera
-			    col= self.nec%self.nec2
+			    fila=int(numimagenactual/columnas) #Me quedo con la parte entera
+			    col= numimagenactual%columnas
 			    print(fila,col)
+			    global matrix
 			    print(matrix)
 			    matrix[fila][col]+=1 #matrix[fila][col]+ 1
 			    

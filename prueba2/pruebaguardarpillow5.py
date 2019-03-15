@@ -17,17 +17,23 @@ rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
 ag=500
 ap=25
 
-def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la ruta?
-	os.mkdir("Recortes") #Creo el directorio para meter las fotos
+def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
 	im = Image.open(rutafoto)
-
 
     #Cojo el tamaño de la imagen
 	form, tam, mod = (im.format, im.size, im.mode)
-	print (tam)
+	#print (tam)
 	maxx , maxy = tam
     #print (x)
 
+	return maxx,maxy,tam , im
+
+def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la ruta?
+	os.mkdir("Recortes") #Creo el directorio para meter las fotos
+
+	maxx, maxy, tam , im= devolverancho(rutafoto)
+	
+	
     #tamaux= np.array(tam)
 
     #Creo la foto que sera el collage
