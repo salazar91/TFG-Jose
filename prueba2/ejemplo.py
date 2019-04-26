@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.popup import Popup
 from kivy.lang import Builder
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
 
 Builder.load_string('''
 <SimpleButton>:
@@ -10,21 +11,25 @@ Builder.load_string('''
     id:pop
     size_hint: .4, .4
     auto_dismiss: False
-    title: 'Hello world!!'
-    Button:
-        text: 'Click here to dismiss'
-        on_press: pop.dismiss()
+    title: 'Introduce Area Pequena'
+    TextInput:
+        id: areapequena
+        text: ''
+        multiline: False
+        on_text_validate: pop.dismiss()
 ''')
+#textinput = TextInput(text='Hello world')
 
 
 class SimplePopup(Popup):
     pass
 
 class SimpleButton(Button):
-    text = "Fire Popup !"
+    text = "Area Pequena"
     def fire_popup(self):
         pops=SimplePopup()
         pops.open()
+        print(pops.ids["areapequena"].text)
 
 class SampleApp(App):
     def build(self):

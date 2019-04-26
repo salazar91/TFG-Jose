@@ -11,13 +11,15 @@ import numpy as np
 
 def varc(ag,ap,a):
 
-
+		#print (ag,ap,a)
         #qoi= [0,0,0,0,0,0] no hace falta
         #qei= [0,0,0,0,0,0]
         #print (qoi[1])
         #print (a)
-
+		#ap=ap*ap
+		#ag=ag*ag
         tau = ap/ag
+        #print (tau,ag,ap,a)
         
         #Igual que en la varianza simple
         j,n=a.shape #es lo mismo que las 2 lineas de arriba pero de manera mas eficiente
@@ -81,6 +83,7 @@ def varc(ag,ap,a):
         vn=(((1-tau)**2)/(3-2*tau))* qs
  
         #varianza
+        #print (tau,C0,C1,C2,vn)
         varc= (1-tau)**2/(tau**4 * (2-tau))/6 * (3*(C0 - vn) -4*C1 + C2) + vn/tau**4
         return (varc)
 

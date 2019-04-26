@@ -1,5 +1,5 @@
 import re
-import pickle, sys
+import pickle, sys, math
 f = open('c:\\Users\\user\\object','rb')
 s = pickle.load(f)
 for directorio in s:
@@ -14,9 +14,10 @@ from scipy import spatial
 import glob,os
 
 rutafoto = 'c:\\Users\\User\\Desktop\\TFG\\Datos\\Fig1A_original.jpg'
-ag=500
-ap=25
-
+#ag=500
+#ap=25
+cpx=0
+cpy =0
 def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
 	im = Image.open(rutafoto)
 
@@ -27,6 +28,17 @@ def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
     #print (x)
 
 	return maxx,maxy,tam , im
+
+def esquinaaleatoria (ag,ap):
+	#Coloco el cuadrado pequeno en un determinado punto del cuadrado grande
+	global cpx, cpy
+	cpx =randint(0, ag -1 - ap) #El -1 es para que no coincida con el comienazo del siguiente cuadrado grande
+	cpy =randint(0, ag -1 - ap)
+	return cpx,cpy
+
+def devolveresquina ():
+	global cpx,cpy
+	return cpx,cpy # me estoy liando
 
 def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la ruta?
 	os.mkdir("Recortes") #Creo el directorio para meter las fotos
@@ -42,13 +54,13 @@ def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la rut
 
 
 
-	filas =int (maxy//ag)+1 #
-	columnas =int (maxx//ag)+1
+	filas =math.ceil (maxy/ag) #
+	columnas =math.ceil (maxx/ag)
 
 	print (filas, columnas)
-	#Coloco el cuadrado peque�o en un determinado punto del cuadrado grande
-	cpx =randint(0, ag -1 - ap) #El -1 es para que no coincida con el comienazo del siguiente cuadrado grande
-	cpy =randint(0, ag -1 - ap)
+	
+	cpx,cpy=esquinaaleatoria(ag,ap)
+	
 	cpyaux=cpy
 	
 	cont=0
@@ -97,4 +109,4 @@ def recortar_imagen(ag, ap, rutafoto): #¿Cuando cargas la imagen te coge la rut
 	#region = im.crop(box)
 	#region.show()
 	#region.save('recorte.jpg')
-recortar_imagen(ag, ap, rutafoto)
+#recortar_imagen(ag, ap, rutafoto)
