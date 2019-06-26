@@ -1,3 +1,4 @@
+#Programas para formar los recortes las filas y las columnas
 import re
 import pickle, sys, math
 f = open('c:\\Users\\user\\object','rb')

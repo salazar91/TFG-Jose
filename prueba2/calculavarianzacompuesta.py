@@ -1,4 +1,5 @@
 #En teoria esta es la segunda varianza con los mismos datos
+#Programa que calcula la varianza compuesta
 
 import pickle, sys
 
@@ -90,13 +91,15 @@ def varc(ag,ap,a):
 
 
 def tras(matriz,ag,ap):
-        matt= np.transpose(matriz) #hace la traspuesta
-        vc1= varc(ag,ap,matriz) #calcula la varianza de la matriz normal
-        #print (vc1)
-        #print (matt)
-        #print (matriz)
-        vc2=varc(ag,ap,matt) #calcula la varianza de la matriz traspuesta
-        #print (vc2)
-        vc= (vc1+vc2)/2 #hace la media de las 2
-        return (vc)
+	    ag=ag*ag
+	    ap=ap*ap
+	    matt= np.transpose(matriz) #hace la traspuesta
+	    vc1= varc(ag,ap,matriz) #calcula la varianza de la matriz normal
+	    #print (vc1)
+	    #print (matt)
+	    #print (matriz)
+	    vc2=varc(ag,ap,matt) #calcula la varianza de la matriz traspuesta
+	    #print (vc2)
+	    vc= (vc1+vc2)/2 #hace la media de las 2
+	    return (vc)
 

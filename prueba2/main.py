@@ -8,6 +8,7 @@ from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Rectangle
 from  pruebaguardarpillow5 import *
 from  calculavarianzacompuesta import *
+from  kdtreespillow2prueba import *
 import shutil # Libreria para borrar los recortes
 		
 
@@ -18,6 +19,7 @@ ruta= "."
 ruta= os.path.join(ruta,"Recortes")
 
 matrix=[]
+mataux=[]
 print ("matrix")
 numimagenactual =0 #El anterior contador de la imagen por la que ibamos no la pongo porque da fallos extranhos
 columnas=0 
@@ -101,7 +103,7 @@ class Root(FloatLayout):
 		#ag=500
 		print (ancho/6,ag)
 		global ap
-		ap = int(input("Area Pequeña: "))
+		ap = int(input("Area Pequeña: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
 		#ap=25
 		#self.ids["lienzo"].pinta=True
 		global filas
@@ -109,6 +111,7 @@ class Root(FloatLayout):
 		self.numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
 		global matrix
 		matrix=np.zeros((filas, columnas)) #
+		mataux=matrix #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
 		print(matrix)
 		
     
@@ -120,6 +123,107 @@ class Root(FloatLayout):
 		self.dismiss_popup()
 		
 	def siguiente(self):
+		self.ids["lienzo"].canvas.clear()
+		self.matreal=[]
+		
+		
+		
+		global numimagenactual				
+		global columnas
+		global filas
+		global ag
+		global ap
+		global matrix
+		global mataux
+		
+		
+		lista=self.generador(filas,columnas)
+		print (lista)
+		
+		lista= list(lista)
+					
+		#Calcular varianza real
+		#cojo cpx y cpy que los necesito en el programa, y estan en pruebaguardarpiloow
+		cpx,cpy=devolveresquina ()
+		self.matreal=devolvermatreal(ag,ap,filas,columnas,cpx,cpy)
+		print (self.matreal)
+		
+		#print (tras(self.matreal,ag,ap)) no hace falta porque lo que necesitamos es la matriz real con los 0 de por donde vamos en la otra matriz
+		
+		#coger primero del generador
+		#coger esa posicion para ver cuantas personas ahi (imagen) , el recorte de esa imagen tambien
+		#coger la matriz auxiliar y rellenar con el numero del generador y el dato de la matriz real
+		#Calcular la varianza de ambas		
+		#diferencia= Varianza real / varianza obtenida
+		#while valor diferencia > constante(x)
+			#anadir uno al indice (del generador)
+			#coger esa posicion para ver cuantas personas ahi (imagen) , el recorte de esa imagen tambien - no como lo hacemos ahora ya que hay que saltar y el numimagenactual da igual
+			#coger la matriz auxiliar y rellenar con el numero del generador y el dato de la matriz real
+			#Calcular la varianza de ambas		
+			#diferencia= Varianza real / varianza obtenida
+		
+		
+		#print(lista[0][0]) #Ultimo 0= fila, Ultimo 1= columna
+		#print (numimagenactual)
+		#print(lista[numimagenactual][0])		
+			
+		if numimagenactual < self.numero_imagenes:
+			
+			self.ids["mario"].source=os.path.join(ruta,f"recorte{lista[numimagenactual][0]}_{lista[numimagenactual][1]}.jpg")
+			numimagenactual +=1
+			#global ag
+			#global ap
+			print (numimagenactual , self.numero_imagenes)
+			#self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
+			
+			#Aqui sera donde tienes que pasar a la matriz auxiliar el dato real que aparece en la matriz real
+			mataux[lista[numimagenactual][0]][lista[numimagenactual][1]]=self.matreal[lista[numimagenactual][0]][lista[numimagenactual][1]]
+			print (mataux)
+			
+			self.varianza=tras(matrix,ag,ap)
+			self.ids["var_text"].text= str(self.varianza)
+			
+			self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
+			print (ag,ap,matrix.sum(), self.numero_imagenes,numimagenactual)
+			self.ids["var_est"].text= str(self.estimacion)
+			
+				
+				
+			
+		if numimagenactual == 1:
+			#print ("Hola")
+			self.ids["lienzo"].pinta=True
+			
+		if numimagenactual == self.numero_imagenes:
+			if self.ids["Sig"].text!="Finish":
+				self.ids["Sig"].text="Finish"
+				print ("calcular varianza")
+				self.varianza=tras(matrix,ag,ap)
+				self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)
+				self.ids["var_text"].text= str(self.varianza)
+				self.ids["var_est"].text= str(self.estimacion)
+				print (self.varianza)
+			#Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
+		
+			else:
+				shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
+				exit()
+	
+	
+	def generador(self,filas, columnas):
+		lista = [(0,0)]
+		suma_columnas = columnas//2
+		suma_filas = filas//2
+		while suma_filas >0 or suma_columnas > 0:
+			for i in range(0, filas, suma_filas):
+				for j in range(0, columnas, suma_columnas):
+					if (i,j) not in lista:
+						lista.append((i,j))
+			suma_filas //= 2
+			suma_columnas //= 2
+		return lista			
+				
+	def siguientev0(self): #Siguiente normal que recorre todas los cuadrados por orden
 		self.ids["lienzo"].canvas.clear()
 		
 		global numimagenactual				
@@ -161,6 +265,7 @@ class Root(FloatLayout):
 			else:
 				shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
 				exit()
+
 			
 
 	
@@ -173,7 +278,7 @@ class MyPaintWidget(Widget):
 	def dimensionar (self, touchx, touchy, ex, ey, cpx, cpy, ag, ap, fila, columna):
 		
 		print ("Inicio")
-		print (touchx,touchy)
+		#print (touchx,touchy)
 		
 		#sacar la coordenadada en la imagen dimensionada (no en el programa)
 		coordx=touchx - ex
@@ -196,7 +301,7 @@ class MyPaintWidget(Widget):
 		
 		
 		print ("FINAL")
-		print (coordx,coordy)
+		#print (coordx,coordy)
 		f=open('coordenadas.txt','a')
 		f.write ("%.2f \t %.2f\n"%(coordx,coordy)) #Para que te saque solo 2 decimales (expresiones)
 		f.close()
