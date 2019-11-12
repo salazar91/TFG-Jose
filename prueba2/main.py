@@ -26,6 +26,7 @@ columnas=0
 filas=0
 ag=0
 ap=0
+rutafoto= "" #para pasarlo despues al fichero la pongo como global
 
 #class Boton(Button):
 
@@ -83,6 +84,12 @@ class Root(FloatLayout):
 		f.write ("COORDENADAS \n")
 		f.write ("-------------- \n")
 		f.close()
+		
+		#Para rescribir el fichero resultados
+		f=open('resultados.txt','w')
+		f.write ("RESULTADOS \n")
+		f.write ("-------------- \n")
+		f.close()
 			
 			
 		self.ids["mario"].source=filename[0]
@@ -91,7 +98,7 @@ class Root(FloatLayout):
 		self.dismiss_popup()
 		
 		#Hacer aqui el pop up del area pequena
-		
+		global rutafoto
 		rutafoto = (filename[0])
 		
 		datosfoto= devolverancho(rutafoto) #retorno los datos de la imagen
@@ -122,7 +129,7 @@ class Root(FloatLayout):
 
 		self.dismiss_popup()
 		
-	def siguiente(self):
+	def siguientev2(self):
 		self.ids["lienzo"].canvas.clear()
 		self.matreal=[]
 		
@@ -155,7 +162,7 @@ class Root(FloatLayout):
 		#coger la matriz auxiliar y rellenar con el numero del generador y el dato de la matriz real
 		#Calcular la varianza de ambas		
 		#diferencia= Varianza real / varianza obtenida
-		#while valor diferencia > constante(x)
+		#while valor diferencia > constante(x)  y num imagenes < 50% imagenes totales
 			#anadir uno al indice (del generador)
 			#coger esa posicion para ver cuantas personas ahi (imagen) , el recorte de esa imagen tambien - no como lo hacemos ahora ya que hay que saltar y el numimagenactual da igual
 			#coger la matriz auxiliar y rellenar con el numero del generador y el dato de la matriz real
@@ -183,7 +190,7 @@ class Root(FloatLayout):
 			self.varianza=tras(matrix,ag,ap)
 			self.ids["var_text"].text= str(self.varianza)
 			
-			self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
+			self.estimacion=(ag^2/ap^2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
 			print (ag,ap,matrix.sum(), self.numero_imagenes,numimagenactual)
 			self.ids["var_est"].text= str(self.estimacion)
 			
@@ -203,7 +210,16 @@ class Root(FloatLayout):
 				self.ids["var_text"].text= str(self.varianza)
 				self.ids["var_est"].text= str(self.estimacion)
 				print (self.varianza)
-			#Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
+				#Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
+				#Meter los resultados en el ficghero con t,T cpx,cpy
+				f=open('resultados.txt','a')
+				f.write ("T: %d \n"%(ag))
+				f.write ("t: %d \n"%(ap)) 
+				f.write ("cpx: %d \n"%(cpx))
+				f.write ("cpy: %d \n"%(cpy))
+				f.write ("varianza: %.2f \n"%(self.varianza))
+				f.write ("estimacion: %.2f \n"%(self.estimacion))
+				f.close()
 		
 			else:
 				shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
@@ -223,7 +239,7 @@ class Root(FloatLayout):
 			suma_columnas //= 2
 		return lista			
 				
-	def siguientev0(self): #Siguiente normal que recorre todas los cuadrados por orden
+	def siguiente(self): #Siguiente normal que recorre todas los cuadrados por orden
 		self.ids["lienzo"].canvas.clear()
 		
 		global numimagenactual				
@@ -260,7 +276,17 @@ class Root(FloatLayout):
 				self.ids["var_text"].text= str(self.varianza)
 				self.ids["var_est"].text= str(self.estimacion)
 				print (self.varianza)
-			#Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
+				#Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
+				f=open('resultados.txt','a')
+				f.write ("T: %d \n"%(ag))
+				f.write ("t: %d \n"%(ap)) 
+				f.write ("cpx: %d \n"%(cpx))
+				f.write ("cpy: %d \n"%(cpy))
+				f.write ("varianza: %.2f \n"%(self.varianza))
+				f.write ("estimacion: %.2f \n"%(self.estimacion))
+				rutafotoalt=rutafoto.split("\\")[-1] #Para coger el nombre de la imagen
+				f.write ("imagen: %s \n"%(rutafotoalt))
+				f.close()
 		
 			else:
 				shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
