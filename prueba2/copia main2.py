@@ -27,8 +27,6 @@ filas=0
 ag=0
 ap=0
 rutafoto= "" #para pasarlo despues al fichero la pongo como global
-listagenerador=[]
-
 
 #class Boton(Button):
 
@@ -145,12 +143,15 @@ class Root(FloatLayout):
 		global ap
 		global matrix
 		global mataux
-		global listagenerador
 		
-		listagenerador=self.generador(filas,columnas)
-		listagenerador= list(listagenerador)
-		print (listagenerador)
-		print (listagenerador[0])
+		
+		lista=self.generador(filas,columnas)
+		print ("Fernando")
+		print (lista)
+		
+		lista= list(lista)
+		
+		print (lista[0])
 					
 		#Calcular varianza real
 		#cojo cpx y cpy que los necesito en el programa, y estan en pruebaguardarpiloow
@@ -182,36 +183,27 @@ class Root(FloatLayout):
 			
 		if numimagenactual < self.numero_imagenes:
 			
-			self.ids["mario"].source=os.path.join(ruta,f"recorte{listagenerador[numimagenactual][0]}_{listagenerador[numimagenactual][1]}.jpg")
+			self.ids["mario"].source=os.path.join(ruta,f"recorte{lista[numimagenactual][0]}_{lista[numimagenactual][1]}.jpg")
+			numimagenactual +=1
 			#global ag
 			#global ap
 			print (numimagenactual , self.numero_imagenes)
 			
-			#print (mataux [0,3])
-			print ("Fernando")
-		
-			#print(listagenerador[numimagenactual])
+			print (mataux [0,3])
+			
+			print(lista[numimagenactual])
 			#self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
 			
 			#Aqui sera donde tienes que pasar a la matriz auxiliar el dato real que aparece en la matriz real
-			mataux[listagenerador[numimagenactual]]=self.matreal[listagenerador[numimagenactual]]
+			mataux[lista[numimagenactual]]=self.matreal[lista[numimagenactual]]
 			print (mataux)
 			
 			self.varianza=tras(mataux,ag,ap)
+			self.ids["var_text"].text= str(self.varianza)
 			
-			if numimagenactual>0:
-				self.estimacion=(ag**2/ap**2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
-			else:
-				self.estimacion =-1
-				
-			coeficiente_error=self.varianza/self.estimacion**2
-			self.ids["var_text"].text= "Coeficiente: "+str(coeficiente_error)
-
-				
+			self.estimacion=(ag**2/ap**2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
 			print (ag,ap,matrix.sum(), self.numero_imagenes,numimagenactual)
-			self.ids["var_est"].text= "Estimacion: "+str(self.estimacion)
-			numimagenactual +=1
-
+			self.ids["var_est"].text= str(self.estimacion)
 			
 				
 				
@@ -363,9 +355,8 @@ class MyPaintWidget(Widget):
 			    self.conjunto.add((touch.x,touch.y))
 			    d = 10.
 			    Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
-			    global listagenerador
-			    fila=int(listagenerador[numimagenactual-1][0]) #Me quedo con la parte entera
-			    col= listagenerador[numimagenactual-1][1]
+			    fila=int((numimagenactual-1)/columnas) #Me quedo con la parte entera
+			    col= (numimagenactual-1)%columnas
 			    print("prueba")
 			    print(fila,col, numimagenactual)
 			    global matrix

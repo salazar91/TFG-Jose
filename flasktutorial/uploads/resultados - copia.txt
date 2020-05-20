@@ -1,0 +1,9 @@
+RESULTADOS 
+-------------- 
+T: 300 
+t: 50 
+cpx: 0 
+cpy: 0 
+varianza: 3249875.84 
+estimacion: 12.00 
+imagen: prueba1.jpg 
