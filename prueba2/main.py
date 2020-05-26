@@ -6,6 +6,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Rectangle
+#from random import randomint
 from  pruebaguardarpillow5 import *
 from  calculavarianzacompuesta import *
 from  kdtreespillow2prueba import *
@@ -197,14 +198,20 @@ class Root(FloatLayout):
 			mataux[listagenerador[numimagenactual]]=self.matreal[listagenerador[numimagenactual]]
 			print (mataux)
 			
-			self.varianza=tras(mataux,ag,ap)
+			self.rellenarmatriz(self.matreal) #Añadir el valor de posiciones vacias (Seran las imagenes(self.numero_imagenes)- las que llevamos recorridas(numimagenactual))
+			
+			self.varianzareal=tras(mataux,ag,ap)
+			self.varianza=tras(matrix, ag,ap)
+			
+			print ("VARIANZA MIA:"+str(self.varianza))
+			print ("VARIANZA REAL:"+str(self.varianzareal))
 			
 			if numimagenactual>0:
 				self.estimacion=(ag**2/ap**2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
 			else:
 				self.estimacion =-1
 				
-			coeficiente_error=self.varianza/self.estimacion**2
+			coeficiente_error=self.varianzareal/self.estimacion**2
 			self.ids["var_text"].text= "Coeficiente: "+str(coeficiente_error)
 
 				
@@ -256,7 +263,18 @@ class Root(FloatLayout):
 						lista.append((i,j))
 			suma_filas //= 2
 			suma_columnas //= 2
-		return lista			
+		return lista	
+	
+	def rellenarmatriz(self, matriz, vacios):
+		#Funcion a la que se le pasa la matriz que llevamos recorrida, y te tiene que devolver la matriz extrapolada, transformando las posiciones no recorridas en valores posibles (Rango del minimo al maximo de las anteriores posiciones)
+		print ("Extrapolar")
+		
+		
+		
+		for 
+			for i,j in product(range(5),range(3)): #Prueba
+				matriz[i,j]=		#matriz 	
+	
 				
 	def siguientev0(self): #Siguiente normal que recorre todas los cuadrados por orden
 		self.ids["lienzo"].canvas.clear()
