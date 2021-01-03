@@ -1,0 +1,8 @@
+RESULTADOS 
+-------------- 
+T: 300 
+t: 80 
+cpx: 4 
+cpy: 28 
+varianza: 0.00 
+estimacion: 0.00 
