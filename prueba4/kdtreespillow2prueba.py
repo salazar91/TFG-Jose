@@ -13,7 +13,7 @@ from numpy import array
 
 from PIL import Image
 from random import randint
-import numpy as np
+import numpy as np #Para rellenar la matriz
 from scipy import spatial
 
 def devolvermatreal(ag,ap,filas,columnas,cpx,cpy):

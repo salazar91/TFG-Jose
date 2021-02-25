@@ -202,7 +202,7 @@ class Root(FloatLayout):
             
             #mataux es la matrix con las posiciones restantes rellenas al azar (no confundir con las simulaciones)
             mataux=self.rellenarmatriz(matrix, (self.numero_imagenes-numimagenactual) ) #Anadir el valor de posiciones vacias (Seran las imagenes(self.numero_imagenes)- las que llevamos recorridas(numimagenactual))
-            
+            print (mataux)
             self.varianzareal=tras(mataux,ag,ap)
             self.varianza=tras(matrix, ag,ap)
             
@@ -273,7 +273,7 @@ class Root(FloatLayout):
         print ("Extrapolar")
         print (matriz,vacios)
         
-        #coher el maximo y el minimo de la matriz sin contar los -1
+        #co ger el maximo y el minimo de la matriz sin contar los -1
 
         #inicializamos la matriz con -1
         a = np.zeros((4,4)) - 1

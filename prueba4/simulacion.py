@@ -2,24 +2,26 @@
 #Programa similar al main, pero con las simulaciones, con un archivo de coordenadas, una matreal que coge esas coordenadas y las transforma en matriz, y con su comparacion imagen a imagen, hasta que la varianza de la martriz que estamos recorriendo, y la real, tengan una siilitud importante.
 
 
-from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
-from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
-from kivy.uix.widget import Widget
-from kivy.uix.button import Button
-from kivy.graphics import Color, Ellipse, Rectangle
+
 #from random import randomint
-from  pruebaguardarpillow5 import *
+#from  pruebaguardarpillow5 import *
 from  calculavarianzacompuesta import tras
-from  kdtreespillow2prueba import *
+#from  kdtreespillow2prueba import *
+from PIL import Image
+import re
+from random import randint
+import numpy as np
+from scipy import spatial
+
+
 import shutil # Libreria para borrar los recortes
         
-import numpy as np #Para rellenamatriz
 from itertools import product, combinations
 
 import os
+import time
+import pickle, sys, math
+from sqlalchemy.sql.expression import except_
 
 
 ruta= "."
@@ -27,244 +29,148 @@ ruta= os.path.join(ruta,"Recortes")
 
 matrix=[] #La matriz que hay que pintar
 mataux=[] #La matriz que vamos a usar para ir metiendo los distintos numeros de la matriz real, y compararlas
-print ("matrix")
-numimagenactual =0 #El anterior contador de la imagen por la que ibamos no la pongo porque da fallos extranhos
+#print ("matrix")
 columnas=0 
 filas=0
+numero_imagenes=0
 ag=0
 ap=0
 rutafoto= "" #para pasarlo despues al fichero la pongo como global
 listagenerador=[]
 
+mediaimagenes=0
+mediadiferencia=0
 
-#class Boton(Button):
+max_diferencia =0 #Para el %
 
+#Creo el fichero para despues pasarselo al programa de las graficas
+f=open('simulaciones.txt','w')
+f.write ("SIMULACIONES \n")
+f.write ("-------------- \n")
+f.close()
+
+
+#variables que no cambian con cada simulacion
+rutafoto = '.\\Fig1A_original.jpg'
+rutadatos = '.\\annPoints_Iribar.dat'
+
+
+def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
+    im = Image.open(rutafoto)
+
+    #Cojo el tamaño de la imagen
+    form, tam, mod = (im.format, im.size, im.mode)
+    #print (tam)
+    maxx , maxy = tam
+    #print (x)
+
+    return maxx,maxy,tam , im
+
+def esquinaaleatoria (ag,ap):
+    #Coloco el cuadrado pequeno en un determinado punto del cuadrado grande
+    global cpx, cpy
+    cpx =randint(0, ag -1 - ap) #El -1 es para que no coincida con el comienazo del siguiente cuadrado grande
+    cpy =randint(0, ag -1 - ap)
+    return cpx,cpy
+
+
+datosfoto= devolverancho(rutafoto) #retorno los datos de la imagen
+ancho=(datosfoto[0])
+#print (ancho)
+#global ag
+ag = math.ceil(ancho/6) #se puede cambiar ese 6 por el numero de columnas 
+#print (ag, "Area Grande")
+#print (ancho/6,ag)
+#global ap
+#ap=50
+
+maxx, maxy, tam , im= devolverancho(rutafoto)
+filas =math.ceil (maxy/ag) 
+columnas =math.ceil (maxx/ag)
+numero_imagenes= filas*columnas
+
+
+
+
+#print (filas, "Filas")
+#print (columnas, "Columnas")
+#print (numero_imagenes, "Imagenes")
+
+
+#Programa para formar la matriz (kdtrees)
+
+def devolvermatreal(ag,ap,filas,columnas,cpx,cpy):
+    coordenadas =[]
+    # compilando la regex
+    patron = re.compile(r'\s+')
+    
+    # Abre archivo en modo lectura
+    archivo = open(rutadatos,'r') #Modificar para crear ruta local
+
+    #rutafoto = 'c:\\Users\\User\\Desktop\\portero.jpg' #Modificar para poner la ruta local (ya la tenemos?)
+    #im = Image.open(rutafoto)
+    
+    # inicia bucle infinito para leer línea a línea
+    listatotal = list()
+    
+    for linea in archivo.readlines():
+        coordenadas=list ()
+        num1 = patron.split(linea)
+        #print(num1[0])  # Muestra la línea leída
+        coordenadas.append(float (num1[0]))
+        coordenadas.append(float (num1[1]))
+        listatotal.append(coordenadas)
+        
+    coordenadas= np.array(listatotal)    
+    archivo.close()  # Cierra archivo
+    
+    #im = Image.open("hopper.ppm")
+    tree= spatial.KDTree(coordenadas)
+    
+    #print (coordenadas)
+    
+    #Creo la matriz final
+    matrix=np.zeros((filas, columnas))
+    #print (matrix)
+    
+    #Coloco el cuadrado pequeño en un determinado punto del cuadrado grande
+    #Tenemos cpx y cpy
+    
+    #cojo el medio
+    cpx= cpx + ap/2
+    cpy= cpy + ap/2
+    #print (cpx,cpy)
+    
+    cpyaux=cpy #para volver a la posicion
+    cont=0 #contador para guardar las imagenes
+    #Voy recorriendo la matriz
+    for y in range(columnas):
+        for x in range (filas):
+            #print ("X")
+            i=str(cont) #Para la cadena de la imagen
+            cont= cont +1
+            
+            #print (minxaux)
+            #print ("Y")
+            #print (minyaux)
+            indices= tree.query_ball_point ([cpx,cpy], ap/2, np.inf)
+            puntos=0
+            for i in indices:
+                ptemp= coordenadas[i]
+                #print (ptemp)
+                if ptemp[1] != cpy-ap/2 and ptemp[0] != cpx-ap/2:
+                    puntos = puntos +1
+            
+            matrix[x][y]=matrix[x][y] +puntos
+            cpy=cpy+ag
+        cpy=cpyaux
+        cpx=cpx+ag
+    return (matrix)
 
     
 
-class LoadDialog(FloatLayout):
-    load = ObjectProperty(None)
-    cancel = ObjectProperty(None)
 
-
-class SaveDialog(FloatLayout):
-    save = ObjectProperty(None)
-    text_input = ObjectProperty(None)
-    cancel = ObjectProperty(None)
-
-
-class Root(FloatLayout):
-    loadfile = ObjectProperty(None)
-    savefile = ObjectProperty(None)
-    text_input = ObjectProperty(None)
-    contador =0
-    
-
-    def dismiss_popup(self):
-        self._popup.dismiss()
-
-    def show_load(self):
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Load file", content=content, size_hint=(0.9, 0.9))
-        self._popup.open()
-        #self.ids["var_text"].text= "20"
-
-    def show_save(self):
-        content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Save file", content=content,size_hint=(0.9, 0.9))
-        self._popup.open()
-    
-    def load(self, path, filename):
-        print(filename[0])
-        extension = os.path.splitext(filename[0])[1] #Para coger la extension (Con el import os)
-        print (extension)
-        #*****************
-        #Si la extension no es jpg, pasarlo a jpg (el nombre y la imagen)
-        #if extension != ".jpg":
-        #
-        #
-        #
-        #
-        #*****************    
-            
-            
-        #Para reescribir el fichero de coordenadas
-        f=open('coordenadas.txt','w')
-        f.write ("COORDENADAS \n")
-        f.write ("-------------- \n")
-        f.close()
-        
-        #Para rescribir el fichero resultados
-        f=open('resultados.txt','w')
-        f.write ("RESULTADOS \n")
-        f.write ("-------------- \n")
-        f.close()
-            
-            
-        self.ids["mario"].source=filename[0]
-        self.ids["var_text"].text= "20"
-        
-        self.dismiss_popup()
-        
-        #Hacer aqui el pop up del area pequena
-        global rutafoto
-        rutafoto = (filename[0])
-        
-        datosfoto= devolverancho(rutafoto) #retorno los datos de la imagen
-        ancho=(datosfoto[0])
-        print (ancho)
-        global ag
-        ag = math.ceil(ancho/6) #se puede cambiar ese 6 por el numero de columnas 
-        #ag = int(input("Area Grande: "))
-        #ag=500
-        print (ancho/6,ag)
-        global ap
-        ap = int(input("Area Pequeña: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
-        #ap=25
-        #self.ids["lienzo"].pinta=True
-        global filas
-        global columnas
-        self.numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
-        global matrix
-        global mataux
-        matrix=np.zeros((filas, columnas)) # En este caso no es necesario inicializar a -1, porque no se va a rellenar 
-        mataux=matrix.copy() #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
-        print(matrix)
-        
-    
-
-    def save(self, path, filename):
-        with open(os.path.join(path, filename), 'w') as stream:
-            stream.write(self.text_input.text)
-
-        self.dismiss_popup()
-        
-    def siguiente(self):
-        self.ids["lienzo"].canvas.clear()
-        self.matreal=[]
-        
-        
-        
-        global numimagenactual                
-        global columnas
-        global filas
-        global ag
-        global ap
-        global matrix
-        global mataux
-        global listagenerador
-        
-        listagenerador=self.generador(filas,columnas)
-        listagenerador= list(listagenerador)
-        print (listagenerador)
-        print (listagenerador[0])
-                    
-        #Calcular varianza real
-        #cojo cpx y cpy que los necesito en el programa, y estan en pruebaguardarpiloow
-        cpx,cpy=devolveresquina ()
-        #print("Hola")
-        #print (cpx,cpy)
-        self.matreal=devolvermatreal(ag,ap,filas,columnas,cpx,cpy)  #Te devuelve la matriz con el fichero (Esta en kdtrees)
-        print (self.matreal)
-        
-        #print (tras(self.matreal,ag,ap)) no hace falta porque lo que necesitamos es la matriz real con los 0 de por donde vamos en la otra matriz
-        
-        
-        #coger primero del generador
-        #coger esa posicion para ver cuantas personas ahi (imagen) , el recorte de esa imagen tambien
-        #coger la matriz auxiliar y rellenar con el numero del generador y el dato de la matriz real
-        #Calcular la varianza de ambas        
-        #diferencia= Varianza real / varianza obtenida
-        #while valor diferencia > constante(x)  y num imagenes < 50% imagenes totales
-            #anadir uno al indice (del generador)
-            #coger esa posicion para ver cuantas personas ahi (imagen) , el recorte de esa imagen tambien - no como lo hacemos ahora ya que hay que saltar y el numimagenactual da igual
-            #coger la matriz auxiliar y rellenar con el numero del generador y el dato de la matriz real
-            #Calcular la varianza de ambas        
-            #diferencia= Varianza real / varianza obtenida
-        
-        
-        #print(lista[0][0]) #Ultimo 0= fila, Ultimo 1= columna
-        #print (numimagenactual)
-        #print(lista[numimagenactual][0])        
-            
-        if numimagenactual < self.numero_imagenes:
-            
-            self.ids["mario"].source=os.path.join(ruta,f"recorte{listagenerador[numimagenactual][0]}_{listagenerador[numimagenactual][1]}.jpg")
-            #global ag
-            #global ap
-            print (numimagenactual , self.numero_imagenes)
-            
-            #print (mataux [0,3])
-            #print ("Fernando")
-        
-            #print(listagenerador[numimagenactual])
-            #self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
-            
-            #Aqui sera donde tienes que pasar a la matriz auxiliar el dato real que aparece en la matriz real
-            mataux[listagenerador[numimagenactual]]=self.matreal[listagenerador[numimagenactual]]
-            
-            print ("mataux")
-            print (mataux)
-            
-            print ("matreal")
-            print (self.matreal)
-            
-            
-            #self.rellenarmatriz(mataux, (self.numero_imagenes-numimagenactual) ) #Anadir el valor de posiciones vacias (Seran las imagenes(self.numero_imagenes)- las que llevamos recorridas(numimagenactual)) (ESTO ES DEL PROGRAMA PRINCIPAL)
-            
-            self.varianza=tras(mataux,ag,ap)
-            self.varianzareal=tras(self.matreal, ag,ap)
-            
-            print ("VARIANZA MIA:"+str(self.varianza))
-            print ("VARIANZA REAL:"+str(self.varianzareal))
-            
-            if numimagenactual>0:
-                self.estimacion=(ag**2/ap**2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
-            else:
-                self.estimacion =-1
-                
-            coeficiente_error=self.varianzareal/self.estimacion**2
-            self.ids["var_text"].text= "Coeficiente: "+str(coeficiente_error)
-
-                
-            print (ag,ap,matrix.sum(), self.numero_imagenes,numimagenactual)
-            self.ids["var_est"].text= "Estimacion: "+str(self.estimacion)
-            numimagenactual +=1
-
-            
-                
-                
-            
-        if numimagenactual == 1:
-            #print ("Hola")
-            self.ids["lienzo"].pinta=True
-            
-        if numimagenactual == self.numero_imagenes:
-            if self.ids["Sig"].text!="Finish":
-                self.ids["Sig"].text="Finish"
-                print ("calcular varianza")
-                self.varianza=tras(matrix,ag,ap)
-                self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)
-                self.ids["var_text"].text= str(self.varianza)
-                self.ids["var_est"].text= str(self.estimacion)
-                print (self.varianza)
-                #Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
-                #Meter los resultados en el ficghero con t,T cpx,cpy
-                f=open('resultados.txt','a')
-                f.write ("T: %d \n"%(ag))
-                f.write ("t: %d \n"%(ap)) 
-                f.write ("cpx: %d \n"%(cpx))
-                f.write ("cpy: %d \n"%(cpy))
-                f.write ("varianza: %.2f \n"%(self.varianza))
-                f.write ("estimacion: %.2f \n"%(self.estimacion))
-                f.close()
-        
-            else:
-                shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
-                exit()
-    
-    
-    def generador(self,filas, columnas):
+def generador(filas, columnas):
         lista = [(0,0)]
         suma_columnas = columnas//2
         suma_filas = filas//2
@@ -276,181 +182,124 @@ class Root(FloatLayout):
             suma_filas //= 2
             suma_columnas //= 2
         return lista    
-    
-    def rellenarmatriz(self, matriz, vacios):
-        #Funcion a la que se le pasa la matriz que llevamos recorrida, y te tiene que devolver la matriz extrapolada, transformando las posiciones no recorridas en valores posibles (Rango del minimo al maximo de las anteriores posiciones)
-        print ("Extrapolar")
-        print (matriz,vacios)
-        
-        
 
-        #inicializamos la matriz con -1
-        a = np.zeros((4,4)) - 1
-        print(a.shape)
-        def todas_posibilidades(a, maximo, minimo):
-            num_f, num_c = a.shape
-            posiciones = []
-            for i,j in product(range(num_f), range(num_c)):
-                if a[i,j] == -1:
-                    posiciones.append((i,j))
-            for valores in product(range(maximo, minimo), repeat = len(posiciones)):
-                    temp = a.copy()
-                    for val, l in zip(valores, posiciones):
-                        temp[l[0], l[1]] = val
-                    yield temp
 
-        contador = 0
-        for i in (todas_posibilidades(a,2,4)):
-            contador += 1
-        print(contador)
+
+
+
+def rellenar(numimagenactual, i):
         
-        """for 
-            for i,j in product(range(5),range(3)): #Prueba
-                matriz[i,j]=        #matriz     
-    
-        """
-                
-    def siguientev0(self): #Siguiente normal que recorre todas los cuadrados por orden
-        self.ids["lienzo"].canvas.clear()
         
-        global numimagenactual                
+        
         global columnas
-                            
-        if numimagenactual < self.numero_imagenes:
-            
-            self.ids["mario"].source=os.path.join(ruta,f"recorte{numimagenactual//columnas}_{numimagenactual%columnas}.jpg")
-            numimagenactual +=1
-            global ag
-            global ap
-            print (numimagenactual , self.numero_imagenes)
-            #self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
-            self.varianza=tras(matrix,ag,ap)
-            self.ids["var_text"].text= str(self.varianza)
-            
-            self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
-            print (ag,ap,matrix.sum(), self.numero_imagenes,numimagenactual)
-            self.ids["var_est"].text= str(self.estimacion)
-            
-                
-                
-            
-        if numimagenactual == 1:
-            #print ("Hola")
-            self.ids["lienzo"].pinta=True
-            
-        if numimagenactual == self.numero_imagenes:
-            if self.ids["Sig"].text!="Finish":
-                self.ids["Sig"].text="Finish"
-                print ("calcular varianza")
-                self.varianza=tras(matrix,ag,ap)
-                self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)
-                self.ids["var_text"].text= str(self.varianza)
-                self.ids["var_est"].text= str(self.estimacion)
-                print (self.varianza)
-                #Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
-                f=open('resultados.txt','a')
-                f.write ("T: %d \n"%(ag))
-                f.write ("t: %d \n"%(ap)) 
-                f.write ("cpx: %d \n"%(cpx))
-                f.write ("cpy: %d \n"%(cpy))
-                f.write ("varianza: %.2f \n"%(self.varianza))
-                f.write ("estimacion: %.2f \n"%(self.estimacion))
-                rutafotoalt=rutafoto.split("\\")[-1] #Para coger el nombre de la imagen
-                f.write ("imagen: %s \n"%(rutafotoalt))
-                f.close()
-        
-            else:
-                shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
-                exit()
-
-            
-
-    
-class MyPaintWidget(Widget):
-    conjunto = set()
-    contador=0
-    #fila=0
-    #col=0
-    
-    def dimensionar (self, touchx, touchy, ex, ey, cpx, cpy, ag, ap, fila, columna):
-        
-        print ("Inicio")
-        #print (touchx,touchy)
-        
-        #sacar la coordenadada en la imagen dimensionada (no en el programa)
-        coordx=touchx - ex
-        coordy=touchy - ey
-        
-        #Dimensionar la imagen (area p con dimensiones por defecto 600,00)
-        #print(self.size)
-        coordx=coordx*ap/self.size[0] #anchura del cuadrado en el que se presenta la imagen (x)
-        coordy=coordy*ap/self.size[1] #altura del cuadrado en el que se presenta la imagen (y)
-        
-        #Poner la coordenada repsecto al ag
-        coordx=coordx+cpx
-        coordy=coordy+cpy
-        
-        #Sabiendo la fila y la columna poner la coordenada real en la imagen
         global filas
-        filaaux=filas-1-fila #filaaux para coger la fila para calcular bien la coordenada empezando desde arriba
-        coordx=coordx+ag*columna
-        coordy=coordy+ag*filaaux
+        global numero_imagenes
+        global ag
+        global ap
+        global matrix
+        global mataux
+        global listagenerador
         
+        global mediaimagenes
+        global mediadiferencia
         
-        print ("FINAL")
-        #print (coordx,coordy)
-        f=open('coordenadas.txt','a')
-        f.write ("%.2f \t %.2f\n"%(coordx,coordy)) #Para que te saque solo 2 decimales (expresiones)
-        f.close()
+        global max_diferencia
         
-        pass
-    
-    
-    def on_touch_down(self, touch):
-        with self.canvas:
-            Color(1, 1, 0)
-            print("TOuch %.2f %.2f"%( touch.x,touch.y),self.contador)
-            if touch.x > self.pos[0] and touch.x < self.pos[0] + self.size[0] and touch.y > self.pos[1] and touch.y < self.pos[1] + self.size[1] and self.pinta:
-                self.contador +=1
-                self.conjunto.add((touch.x,touch.y))
-                d = 10.
-                Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
-                global listagenerador
-                fila=int(listagenerador[numimagenactual-1][0]) #Me quedo con la parte entera
-                col= listagenerador[numimagenactual-1][1]
-                print("prueba")
-                print(fila,col, numimagenactual)
-                global matrix
-                print(matrix)
-                matrix[fila][col]+=1 #matrix[fila][col]+ 1
-                cpx,cpy= devolveresquina ()
-                self.dimensionar(touch.x,touch.y, self.pos[0], self.pos[1], cpx, cpy, ag, ap, fila,col)
+        listagenerador=generador(filas,columnas)
+        listagenerador= list(listagenerador)
+        #print (listagenerador)
+        #print (listagenerador[0])
+                    
+       
+        
+            
+        if numimagenactual < numero_imagenes:
+            
+            #print (numimagenactual , numero_imagenes)
+            
+            mataux[listagenerador[numimagenactual]]=matrix[listagenerador[numimagenactual]]
+            
+            #print ("mataux")
+            #print (mataux)
+            
+            #print ("matreal")
+            #print (matrix)
+            
+            
+            
+            varianza=tras(mataux,ag,ap)
+            varianzareal=tras(matrix, ag,ap)
+            
+            #print ("VARIANZA MIA:"+str(varianza))
+            #print ("VARIANZA REAL:"+str(varianzareal))
+            
+            if (numimagenactual / numero_imagenes > 0.5 and (varianza - varianzareal) < 0.1* varianzareal):
+                print (f"Numero de imagenes recorridas: {numimagenactual} \n con diferencia del {(varianza - varianzareal):.2f} ") 
+                f=open('simulaciones.txt','a')
+                f.write (f"Simulacion {i+1} \t %.2f \t %.2f\n"%(numimagenactual/numero_imagenes,abs((varianza - varianzareal)/varianzareal))) #Para que te saque solo 2 decimales (expresiones) #abs para el valor absoluto
+                f.close()
                 
-                #Color(0, 0, 0) #Para quitar el amarillo del mario
-                #Rectangle()#(source="mario.png")
-                #print(self.conjunto)
-            #print(fila,col)
-            print(matrix)
-        
-            #print(self.nec,self.nec2)
-
-class Editor(App):
-    pass
-#    def build(self):
-#        return MyPaintWidget()
+                mediaimagenes=mediaimagenes+numimagenactual
+                mediadiferencia=mediadiferencia+(varianza - varianzareal)
+                
+                if (varianza - varianzareal) > max_diferencia:
+                    max_diferencia=(varianza - varianzareal)
+                raise Exception()        
+            numimagenactual +=1
 
 
+#print ("Prueba",numero_imagenes)
 
 
-Factory.register('Root', cls=Root)
-Factory.register('LoadDialog', cls=LoadDialog)
-Factory.register('SaveDialog', cls=SaveDialog)
+#Programa principal
+numero_simulaciones =100
 
 
-if __name__ == '__main__':
-    if os.path.exists(ruta):
-        shutil.rmtree(ruta)
-    Editor().run()
-    shutil.rmtree(ruta)
+
+for i in range (numero_simulaciones) :
     
-    #print ('borrar recortes')
+    #Variables que cambian en cada simulacion (el ap y la esquina y por tanto la matriz entera)
+    ap =randint(ag/10, ag/2)
+
+    #print (ap, "Area Pequena")
+
+ 
+
+    matrix=np.zeros((filas, columnas)) # En este caso no es necesario inicializar a -1, porque no se va a rellenar 
+    mataux=matrix.copy() #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
+
+    cpx, cpy =esquinaaleatoria(ag, ap)
+    #print (cpx, "cpx")
+    #print (cpy, "cpy")
+
+
+    matrix=devolvermatreal(ag, ap, filas, columnas, cpx, cpy)
+    #print (matrix)
+
+    try:
+        for j in range (numero_imagenes): #Paso i para saber porque simulacion vamos y anadirlo al fichero de salida
+            rellenar(j,i)
+    except:
+        print (f"Simulacion {i+1} analizada")    
+
+#Para hacer las medias, tengo la suma pero la he dividido. Lo hago ahora
+mediaimagenes=mediaimagenes/numero_simulaciones
+mediadiferencia=mediadiferencia/numero_simulaciones
+
+print (mediaimagenes,"media imagenes")
+
+print (mediadiferencia,"media diferencia")
+
+print (max_diferencia,"maxima diferencia")
+
+
+f=open('simulaciones.txt','a')
+f.write (f"Maxima Diferencia: %.2f\n"%(max_diferencia)) #Para que te saque solo 2 decimales (expresiones)
+f.write (f"Media Imagenes: %.2f \t Media Diferencia: %.2f\n"%(mediaimagenes,mediadiferencia)) #Para que te saque solo 2 decimales (expresiones)
+f.close()
+
+
+
+
+
+   
