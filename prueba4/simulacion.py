@@ -51,8 +51,8 @@ f.close()
 
 
 #variables que no cambian con cada simulacion
-rutafoto = '.\\1.jpg'
-rutadatos = '.\\1_ann.mat'
+rutafoto = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1.jpg'
+rutadatos = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1_ann.mat'
 
 
 def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
@@ -79,7 +79,8 @@ ancho=(datosfoto[0])
 #print (ancho)
 #global ag
 ag = math.ceil(ancho/6) #se puede cambiar ese 6 por el numero de columnas 
-#print (ag, "Area Grande")
+print (ag, "Area Grande")
+print (ag/10, "AG / 10")
 #print (ancho/6,ag)
 #global ap
 #ap=50
@@ -262,7 +263,8 @@ numero_simulaciones =100
 for i in range (numero_simulaciones) :
     
     #Variables que cambian en cada simulacion (el ap y la esquina y por tanto la matriz entera)
-    ap =randint(ag/10, ag/2)
+    ap =randint(ag//10, ag//2) #Para que el area pequena no sea float
+    
 
     #print (ap, "Area Pequena")
 
