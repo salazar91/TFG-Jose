@@ -12,7 +12,7 @@ import re
 from random import randint
 import numpy as np
 from scipy import spatial
-
+import scipy.io
 
 import shutil # Libreria para borrar los recortes
         
@@ -51,8 +51,8 @@ f.close()
 
 
 #variables que no cambian con cada simulacion
-rutafoto = '.\\Fig1A_original.jpg'
-rutadatos = '.\\annPoints_Iribar.dat'
+rutafoto = '.\\1.jpg'
+rutadatos = '.\\1_ann.mat'
 
 
 def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
@@ -105,24 +105,27 @@ def devolvermatreal(ag,ap,filas,columnas,cpx,cpy):
     patron = re.compile(r'\s+')
     
     # Abre archivo en modo lectura
-    archivo = open(rutadatos,'r') #Modificar para crear ruta local
+    if '.mat' in rutadatos:
+        coordenadas = scipy.io.loadmat(rutadatos)['annPoints']
+    else:
+        archivo = open(rutadatos,'r') #Modificar para crear ruta local
 
-    #rutafoto = 'c:\\Users\\User\\Desktop\\portero.jpg' #Modificar para poner la ruta local (ya la tenemos?)
-    #im = Image.open(rutafoto)
-    
-    # inicia bucle infinito para leer línea a línea
-    listatotal = list()
-    
-    for linea in archivo.readlines():
-        coordenadas=list ()
-        num1 = patron.split(linea)
-        #print(num1[0])  # Muestra la línea leída
-        coordenadas.append(float (num1[0]))
-        coordenadas.append(float (num1[1]))
-        listatotal.append(coordenadas)
-        
-    coordenadas= np.array(listatotal)    
-    archivo.close()  # Cierra archivo
+        #rutafoto = 'c:\\Users\\User\\Desktop\\portero.jpg' #Modificar para poner la ruta local (ya la tenemos?)
+        #im = Image.open(rutafoto)
+
+        # inicia bucle infinito para leer línea a línea
+        listatotal = list()
+
+        for linea in archivo.readlines():
+            coordenadas=list ()
+            num1 = patron.split(linea)
+            #print(num1[0])  # Muestra la línea leída
+            coordenadas.append(float (num1[0]))
+            coordenadas.append(float (num1[1]))
+            listatotal.append(coordenadas)
+
+        coordenadas= np.array(listatotal)    
+        archivo.close()  # Cierra archivo
     
     #im = Image.open("hopper.ppm")
     tree= spatial.KDTree(coordenadas)
