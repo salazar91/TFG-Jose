@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.pylab as P
 import pickle
+import numpy as np
+
 dir_fig = "./"
 
 

@@ -1,3 +1,7 @@
+
+#Programa similar al main, pero con las simulaciones, con un archivo de coordenadas, una matreal que coge esas coordenadas y las transforma en matriz, y con su comparacion imagen a imagen, hasta que la varianza de la martriz que estamos recorriendo, y la real, tengan una siilitud importante.
+
+
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.factory import Factory
@@ -16,19 +20,18 @@ import numpy as np #Para rellenamatriz
 from itertools import product, combinations
 
 import os
-#from simulacion import numero_imagenes
+import time
 
 
 ruta= "."
 ruta= os.path.join(ruta,"Recortes")
 
 matrix=[] #La matriz que hay que pintar
-mataux=[]
+mataux=[] #La matriz que vamos a usar para ir metiendo los distintos numeros de la matriz real, y compararlas
 print ("matrix")
 numimagenactual =0 #El anterior contador de la imagen por la que ibamos no la pongo porque da fallos extranhos
 columnas=0 
 filas=0
-numero_imagenes=0
 ag=0
 ap=0
 rutafoto= "" #para pasarlo despues al fichero la pongo como global
@@ -117,19 +120,17 @@ class Root(FloatLayout):
         #ag=500
         print (ancho/6,ag)
         global ap
-        ap = int(input("Area Pequeña: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
-        #ap=25
+        #ap = int(input("Area Pequeña: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
+        ap=50
         #self.ids["lienzo"].pinta=True
         global filas
         global columnas
-        global numero_imagenes
-        numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
+        self.numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
         global matrix
         global mataux
-        matrix=-np.ones((filas, columnas)) #Rellena a -1
-        mataux=-np.ones((filas, columnas)) #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros. La inicializamos de la misma forma que la otra
-        print(matrix, "Prueba")
-        print(mataux, "Prueba2")
+        matrix=np.zeros((filas, columnas)) # En este caso no es necesario inicializar a -1, porque no se va a rellenar 
+        mataux=matrix.copy() #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
+        print(matrix)
         
     
 
@@ -141,14 +142,13 @@ class Root(FloatLayout):
         
     def siguiente(self):
         self.ids["lienzo"].canvas.clear()
-        self.matreal=[] #Simu?
+        self.matreal=[]
         
         
         
         global numimagenactual                
         global columnas
         global filas
-        global numero_imagenes
         global ag
         global ap
         global matrix
@@ -165,8 +165,8 @@ class Root(FloatLayout):
         cpx,cpy=devolveresquina ()
         #print("Hola")
         #print (cpx,cpy)
-        #*** Simulaciones *** self.matreal=devolvermatreal(ag,ap,filas,columnas,cpx,cpy)  #Te devuelve la matriz con el fichero
-        #print (self.matreal)
+        self.matreal=devolvermatreal(ag,ap,filas,columnas,cpx,cpy)  #Te devuelve la matriz con el fichero (Esta en kdtrees)
+        print (self.matreal)
         
         #print (tras(self.matreal,ag,ap)) no hace falta porque lo que necesitamos es la matriz real con los 0 de por donde vamos en la otra matriz
         
@@ -188,12 +188,12 @@ class Root(FloatLayout):
         #print (numimagenactual)
         #print(lista[numimagenactual][0])        
             
-        if numimagenactual < numero_imagenes: #Si quedan imagenes por recorrer
+        if numimagenactual < self.numero_imagenes:
             
             self.ids["mario"].source=os.path.join(ruta,f"recorte{listagenerador[numimagenactual][0]}_{listagenerador[numimagenactual][1]}.jpg")
             #global ag
             #global ap
-            print (numimagenactual , numero_imagenes)
+            print (numimagenactual , self.numero_imagenes)
             
             #print (mataux [0,3])
             #print ("Fernando")
@@ -201,27 +201,44 @@ class Root(FloatLayout):
             #print(listagenerador[numimagenactual])
             #self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
             
-            #***Simulaciones Aqui sera donde tienes que pasar a la matriz auxiliar el dato real que aparece en la matriz real
-            #mataux[listagenerador[numimagenactual]]=self.matreal[listagenerador[numimagenactual]]
-            #print (mataux)
+            #Aqui sera donde tienes que pasar a la matriz auxiliar el dato real que aparece en la matriz real
+            mataux[listagenerador[numimagenactual]]=self.matreal[listagenerador[numimagenactual]]
             
-            #mataux es la matrix con las posiciones restantes rellenas al azar (no confundir con las simulaciones)
+            print ("mataux")
+            print (mataux)
             
-            print (matrix,"Antes de")
+            print ("matreal")
+            print (self.matreal)
             
-            mataux=self.rellenarmatriz(matrix, (numero_imagenes-numimagenactual) ) #Anadir el valor de posiciones vacias (Seran las imagenes(self.numero_imagenes)- las que llevamos recorridas(numimagenactual))
             
-            self.varianzareal=tras(mataux,ag,ap)
-            self.varianza=tras(matrix, ag,ap)
+            #self.rellenarmatriz(mataux, (self.numero_imagenes-numimagenactual) ) #Anadir el valor de posiciones vacias (Seran las imagenes(self.numero_imagenes)- las que llevamos recorridas(numimagenactual)) (ESTO ES DEL PROGRAMA PRINCIPAL)
             
-            print (mataux,"Prueba")
-            print (matrix, "Prueba2") 
-            
-            print (mataux is matrix)
-           
+            self.varianza=tras(mataux,ag,ap)
+            self.varianzareal=tras(self.matreal, ag,ap)
             
             print ("VARIANZA MIA:"+str(self.varianza))
             print ("VARIANZA REAL:"+str(self.varianzareal))
+            
+            if (numimagenactual / self.numero_imagenes > 0.8 and (self.varianza - self.varianzareal) < 0.25* self.varianzareal):
+                print ("varianza parecida, se sale del programa")
+                
+                
+                def f(temp):
+                    App.get_running_app().stop()
+                    shutil.rmtree(ruta)
+                    numimagenactual=0
+                    self.ids["var_text"].text= str("")
+                    self.ids["var_est"].text= str("")
+                    Editor().run()
+
+
+                Boton = Button(text = "Finalizar", on_release = f)
+                self._popup = Popup(title=f"Numero de imagenes recorridas: {numimagenactual} \n con diferencia del {(self.varianza - self.varianzareal):.2f} " ,content=Boton, size_hint=(None, None),size=(400,100), auto_dismiss=True) #si pones el dismiss en true y pulsas fuera continua
+                self._popup.open()
+                #time.sleep(5) #Para que muestre el pop up antes de cerrarse
+               
+
+
             
             if numimagenactual>0:
                 self.estimacion=(ag**2/ap**2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
@@ -232,7 +249,7 @@ class Root(FloatLayout):
             self.ids["var_text"].text= "Coeficiente: "+str(coeficiente_error)
 
                 
-            print (ag,ap,matrix.sum(), numero_imagenes,numimagenactual)
+            print (ag,ap,matrix.sum(), self.numero_imagenes,numimagenactual)
             self.ids["var_est"].text= "Estimacion: "+str(self.estimacion)
             numimagenactual +=1
 
@@ -244,12 +261,12 @@ class Root(FloatLayout):
             #print ("Hola")
             self.ids["lienzo"].pinta=True
             
-        if numimagenactual == numero_imagenes:
+        if numimagenactual == self.numero_imagenes:
             if self.ids["Sig"].text!="Finish":
                 self.ids["Sig"].text="Finish"
                 print ("calcular varianza")
                 self.varianza=tras(matrix,ag,ap)
-                self.estimacion=(ag/ap)*matrix.sum()* (numero_imagenes/numimagenactual)
+                self.estimacion=(ag/ap)*matrix.sum()* (self.numero_imagenes/numimagenactual)
                 self.ids["var_text"].text= str(self.varianza)
                 self.ids["var_est"].text= str(self.estimacion)
                 print (self.varianza)
@@ -282,115 +299,8 @@ class Root(FloatLayout):
             suma_columnas //= 2
         return lista    
     
-    def rellenarmatriz(self, matriz, vacios):
-        #Funcion a la que se le pasa la matriz que llevamos recorrida, y te tiene que devolver la matriz extrapolada, transformando las posiciones no recorridas en valores posibles (Rango del minimo al maximo de las anteriores posiciones)
-        print ("Extrapolar")
-        print (matriz,vacios)
-        
-        matextra=matriz
-        
-        #co ger el maximo y el minimo de la matriz sin contar los -1
-        
-        maximo=np.max(matriz)
-        if maximo < 1: #Para que no sea 0
-            maximo=1
-        minimo=0
-        
-        global listagenerador
-        global numero_imagenes 
-        
-        for i in range(numero_imagenes-vacios, numero_imagenes):
-            #listagenerador[i]
-            matextra [listagenerador[i]]=randint (minimo, maximo)
-        
-        print (matextra, "Matriz extrapolada") 
-        print (matriz, "Matriz no extrapolada")    
-        return matextra
-            
 
-        #inicializamos la matriz con -1
-        """"a = np.zeros((4,4)) - 1
-        print(a.shape)
-        def todas_posibilidades(a, maximo, minimo):
-            num_f, num_c = a.shape
-            posiciones = []
-            for i,j in product(range(num_f), range(num_c)):
-                if a[i,j] == -1:
-                    posiciones.append((i,j))
-            for valores in product(range(maximo, minimo), repeat = len(posiciones)):
-                    temp = a.copy()
-                    for val, l in zip(valores, posiciones):
-                        temp[l[0], l[1]] = val
-                    yield temp
-
-        contador = 0
-        for i in (todas_posibilidades(a,2,4)):
-            contador += 1
-        print(contador)
-        #Coger aleatoriamente una y devolverla
-        
-        
-        for 
-            for i,j in product(range(5),range(3)): #Prueba
-                matriz[i,j]=        #matriz     
-    
-        """
-                
-    def siguientev0(self): #Siguiente normal que recorre todas los cuadrados por orden
-        self.ids["lienzo"].canvas.clear()
-        
-        global numimagenactual                
-        global columnas
-        global numero_imagenes
-                            
-        if numimagenactual < numero_imagenes:
-            
-            self.ids["mario"].source=os.path.join(ruta,f"recorte{numimagenactual//columnas}_{numimagenactual%columnas}.jpg")
-            numimagenactual +=1
-            global ag
-            global ap
-            print (numimagenactual , numero_imagenes)
-            #self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
-            self.varianza=tras(matrix,ag,ap)
-            self.ids["var_text"].text= str(self.varianza)
-            
-            self.estimacion=(ag/ap)*matrix.sum()* (numero_imagenes/numimagenactual)  #anadido el n de cuadrados
-            print (ag,ap,matrix.sum(), numero_imagenes,numimagenactual)
-            self.ids["var_est"].text= str(self.estimacion)
-            
-                
-                
-            
-        if numimagenactual == 1:
-            #print ("Hola")
-            self.ids["lienzo"].pinta=True
-            
-        if numimagenactual == numero_imagenes:
-            if self.ids["Sig"].text!="Finish":
-                self.ids["Sig"].text="Finish"
-                print ("calcular varianza")
-                self.varianza=tras(matrix,ag,ap)
-                self.estimacion=(ag/ap)*matrix.sum()* (numero_imagenes/numimagenactual)
-                self.ids["var_text"].text= str(self.varianza)
-                self.ids["var_est"].text= str(self.estimacion)
-                print (self.varianza)
-                #Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
-                f=open('resultados.txt','a')
-                f.write ("T: %d \n"%(ag))
-                f.write ("t: %d \n"%(ap)) 
-                f.write ("cpx: %d \n"%(cpx))
-                f.write ("cpy: %d \n"%(cpy))
-                f.write ("varianza: %.2f \n"%(self.varianza))
-                f.write ("estimacion: %.2f \n"%(self.estimacion))
-                rutafotoalt=rutafoto.split("\\")[-1] #Para coger el nombre de la imagen
-                f.write ("imagen: %s \n"%(rutafotoalt))
-                f.close()
-        
-            else:
-                shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
-                exit()
-
-            
+                         
 
     
 class MyPaintWidget(Widget):

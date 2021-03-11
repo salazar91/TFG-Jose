@@ -51,8 +51,11 @@ f.close()
 
 
 #variables que no cambian con cada simulacion
-rutafoto = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1.jpg'
-rutadatos = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1_ann.mat'
+#rutafoto = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1.jpg'
+#rutadatos = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\3_ann.mat'
+
+rutafoto = r'./Datos/1.jpg'
+rutadatos = r'./Datos/1_ann.mat'
 
 
 def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
@@ -237,7 +240,7 @@ def rellenar(numimagenactual, i):
             #print ("VARIANZA MIA:"+str(varianza))
             #print ("VARIANZA REAL:"+str(varianzareal))
             
-            if (numimagenactual / numero_imagenes > 0.5 and (varianza - varianzareal) < 0.1* varianzareal):
+            if (numimagenactual / numero_imagenes > 0.5 and (varianza - varianzareal) < 0.01* varianzareal):
                 print (f"Numero de imagenes recorridas: {numimagenactual} \n con diferencia del {(varianza - varianzareal):.2f} ") 
                 f=open('simulaciones.txt','a')
                 f.write (f"Simulacion {i+1} \t %.2f \t %.2f\n"%(numimagenactual/numero_imagenes,abs((varianza - varianzareal)/varianzareal))) #Para que te saque solo 2 decimales (expresiones) #abs para el valor absoluto
@@ -256,7 +259,7 @@ def rellenar(numimagenactual, i):
 
 
 #Programa principal
-numero_simulaciones =100
+numero_simulaciones =1000
 
 
 
