@@ -70,11 +70,22 @@ Root:
 					text: "Estimacion"
 							
 			BoxLayout:
-				
+			
 			Button:
 				id: Sig
 				text: "Next"
 				on_release: root.siguiente() 
+				
+			
+			BoxLayout:
+				
+			Button:
+				opacity: 0
+    			disabled: True
+				id: Finalizar
+				text: "Finalizar"
+				on_release: root.guardarresultados() 
+				
 				
 			BoxLayout:
 				size_hint_x: None

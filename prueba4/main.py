@@ -35,6 +35,7 @@ rutafoto= "" #para pasarlo despues al fichero la pongo como global
 listagenerador=[]
 
 
+
 #class Boton(Button):
 
 
@@ -126,8 +127,8 @@ class Root(FloatLayout):
         numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
         global matrix
         global mataux
-        matrix=-np.ones((filas, columnas)) #Rellena a -1
-        mataux=-np.ones((filas, columnas)) #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros. La inicializamos de la misma forma que la otra
+        matrix=np.zeros((filas, columnas)) #Rellena a -1
+        mataux=np.zeros((filas, columnas)) #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros. La inicializamos de la misma forma que la otra
         print(matrix, "Prueba")
         print(mataux, "Prueba2")
         
@@ -154,6 +155,7 @@ class Root(FloatLayout):
         global matrix
         global mataux
         global listagenerador
+   
         
         listagenerador=self.generador(filas,columnas)
         listagenerador= list(listagenerador)
@@ -211,20 +213,34 @@ class Root(FloatLayout):
             
             mataux=self.rellenarmatriz(matrix, (numero_imagenes-numimagenactual) ) #Anadir el valor de posiciones vacias (Seran las imagenes(self.numero_imagenes)- las que llevamos recorridas(numimagenactual))
             
+            #matrix(listagenerador[numimagenactual])+=1
+            
             self.varianzareal=tras(mataux,ag,ap)
             self.varianza=tras(matrix, ag,ap)
             
             print (mataux,"Prueba")
             print (matrix, "Prueba2") 
             
-            print (mataux is matrix)
+            #print (mataux is matrix)
            
             
             print ("VARIANZA MIA:"+str(self.varianza))
             print ("VARIANZA REAL:"+str(self.varianzareal))
             
+            if (numimagenactual / numero_imagenes > 0.5 and (self.varianza - self.varianzareal) < 0.1* self.varianzareal):
+                print (f"Numero de imagenes recorridas: {numimagenactual} \n con diferencia del {(self.varianza - self.varianzareal):.2f} ") 
+                f=open('prueba.txt','a')
+                f.write (f"%.2f \t %.2f\n"%(numimagenactual/numero_imagenes,abs((self.varianza - self.varianzareal)/self.varianzareal))) #Para que te saque solo 2 decimales (expresiones) #abs para el valor absoluto
+                f.close()
+                
+                self.ids["Finalizar"].opacity=100
+                self.ids["Finalizar"].disabled=False
+                
+                             
+                #exit()       
+            
             if numimagenactual>0:
-                self.estimacion=(ag**2/ap**2)*matrix.sum()* (self.numero_imagenes/numimagenactual)  #anadido el n de cuadrados
+                self.estimacion=(ag**2/ap**2)*matrix.sum()* (numero_imagenes/numimagenactual)  #anadido el n de cuadrados
             else:
                 self.estimacion =-1
                 
@@ -287,7 +303,7 @@ class Root(FloatLayout):
         print ("Extrapolar")
         print (matriz,vacios)
         
-        matextra=matriz
+        matextra=np.matrix.copy(matriz)
         
         #co ger el maximo y el minimo de la matriz sin contar los -1
         
@@ -389,6 +405,23 @@ class Root(FloatLayout):
             else:
                 shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
                 exit()
+                
+    def guardarresultados(self):
+            global ap
+            global ag
+            
+            cpx,cpy=devolveresquina ()
+            
+            f=open('resultados.txt','a')
+            f.write ("T: %d \n"%(ag))
+            f.write ("t: %d \n"%(ap)) 
+            f.write ("cpx: %d \n"%(cpx))
+            f.write ("cpy: %d \n"%(cpy))
+            f.write ("varianza: %.2f \n"%(self.varianza))
+            f.write ("estimacion: %.2f \n"%(self.estimacion))
+            f.close()
+            
+            exit() 
 
             
 
@@ -460,6 +493,8 @@ class MyPaintWidget(Widget):
             print(matrix)
         
             #print(self.nec,self.nec2)
+            
+    
 
 class Editor(App):
     pass

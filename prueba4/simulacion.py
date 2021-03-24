@@ -22,6 +22,7 @@ import os
 import time
 import pickle, sys, math
 from sqlalchemy.sql.expression import except_
+from logging import exception
 
 
 ruta= "."
@@ -54,8 +55,8 @@ f.close()
 #rutafoto = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1.jpg'
 #rutadatos = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\3_ann.mat'
 
-rutafoto = r'./Datos/1.jpg'
-rutadatos = r'./Datos/1_ann.mat'
+rutafoto = r'./Datos/19.jpg'
+rutadatos = r'./Datos/19_ann.mat'
 
 
 def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
@@ -111,6 +112,10 @@ def devolvermatreal(ag,ap,filas,columnas,cpx,cpy):
     # Abre archivo en modo lectura
     if '.mat' in rutadatos:
         coordenadas = scipy.io.loadmat(rutadatos)['annPoints']
+        ficheroleermat=open("coordenadas_mat.txt","w")
+        for coordenada in coordenadas:
+            ficheroleermat.write(str(coordenada)+"\n")
+        ficheroleermat.close()
     else:
         archivo = open(rutadatos,'r') #Modificar para crear ruta local
 
@@ -182,12 +187,14 @@ def generador(filas, columnas):
         suma_columnas = columnas//2
         suma_filas = filas//2
         while suma_filas >0 or suma_columnas > 0:
-            for i in range(0, filas, suma_filas):
-                for j in range(0, columnas, suma_columnas):
+            for i in range(0, filas, max(1,suma_filas)):
+                for j in range(0, columnas, max(1,suma_columnas)):
                     if (i,j) not in lista:
                         lista.append((i,j))
             suma_filas //= 2
             suma_columnas //= 2
+        print ("uijhrilj")
+        print (lista)
         return lista    
 
 
@@ -212,8 +219,7 @@ def rellenar(numimagenactual, i):
         
         global max_diferencia
         
-        listagenerador=generador(filas,columnas)
-        listagenerador= list(listagenerador)
+
         #print (listagenerador)
         #print (listagenerador[0])
                     
@@ -251,7 +257,7 @@ def rellenar(numimagenactual, i):
                 
                 if (varianza - varianzareal) > max_diferencia:
                     max_diferencia=(varianza - varianzareal)
-                raise Exception()        
+                raise Exception(f"Salirse (varianza)")        
             numimagenactual +=1
 
 
@@ -259,7 +265,7 @@ def rellenar(numimagenactual, i):
 
 
 #Programa principal
-numero_simulaciones =1000
+numero_simulaciones =100
 
 
 
@@ -275,7 +281,8 @@ for i in range (numero_simulaciones) :
 
     matrix=np.zeros((filas, columnas)) # En este caso no es necesario inicializar a -1, porque no se va a rellenar 
     mataux=matrix.copy() #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
-
+    
+    
     cpx, cpy =esquinaaleatoria(ag, ap)
     #print (cpx, "cpx")
     #print (cpy, "cpy")
@@ -284,11 +291,16 @@ for i in range (numero_simulaciones) :
     matrix=devolvermatreal(ag, ap, filas, columnas, cpx, cpy)
     #print (matrix)
 
+    listagenerador=generador(filas,columnas)
+    listagenerador= list(listagenerador)
+
+
     try:
         for j in range (numero_imagenes): #Paso i para saber porque simulacion vamos y anadirlo al fichero de salida
             rellenar(j,i)
-    except:
-        print (f"Simulacion {i+1} analizada")    
+    except Exception as e:
+        print (f"Simulacion {i+1} analizada")
+        #print (e)    
 
 #Para hacer las medias, tengo la suma pero la he dividido. Lo hago ahora
 mediaimagenes=mediaimagenes/numero_simulaciones
