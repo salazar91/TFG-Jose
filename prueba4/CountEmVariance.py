@@ -137,3 +137,17 @@ print("Estimated: " + str(meanNhat))        # --> Numero estimado de particulas 
 print("VarN: " + str(varN))                 # --> Varianzas N, Cav y Poisson 
 print("VarCav: " + str(varCav))
 print("VarNPoisson: " + str(varNPoisson))
+
+
+# Jose, así adapto para el calculo de la varianza general
+
+def varc(ag, ap, a):
+    Nx, Ny = a.shape
+    Lx = np.sqrt(ap)
+    Ly = Lx
+    Lprime_x = np.sqrt(ag)
+    Lprime_y = Lprime_x
+    samplingFraction = Lx/Lprime_x
+    temp = a.copy()
+    temp = temp.reshape(Nx * Ny).tolist()
+    return image_proc(temp, Lx, Ly, Lprime_x, Lprime_y, samplingFraction, Nx, Ny)[1]
