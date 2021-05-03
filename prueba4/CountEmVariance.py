@@ -77,7 +77,6 @@ def image_proc(count_files,Lx,Ly,Lprime_x,Lprime_y,samplingFraction,Nx,Ny):
                 Qio[i,k]=Qio[i,k]+num_faces_per_q_run[kq,k]
             if (j % 2) == 1:
                 Qie[i,k]=Qie[i,k]+num_faces_per_q_run[kq,k]
-
             tQi[j, k] = tQi[j, k] + num_faces_per_q_run[kq, k]
             if num_faces_per_q_run[kq,k] != 0:
                 tni[j,k]=tni[j,k]+1
@@ -150,4 +149,5 @@ def varc(ag, ap, a):
     samplingFraction = Lx/Lprime_x
     temp = a.copy()
     temp = temp.reshape(Nx * Ny).tolist()
-    return image_proc(temp, Lx, Ly, Lprime_x, Lprime_y, samplingFraction, Nx, Ny)[1]
+    print(f'(temp,  {Lprime_x}, {Lprime_y}, {Lx}, {Ly}, {samplingFraction}, {Nx}, {Ny})')
+    return image_proc(temp,  Lprime_x, Lprime_y, Lx, Ly, samplingFraction, Nx, Ny)[-1]
