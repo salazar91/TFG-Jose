@@ -24,6 +24,8 @@ import pickle, sys, math
 from sqlalchemy.sql.expression import except_
 from logging import exception
 
+from nueva_grafica import creargrafica
+
 
 ruta= "."
 ruta= os.path.join(ruta,"Recortes")
@@ -44,19 +46,20 @@ mediadiferencia=0
 
 max_diferencia =0 #Para el %
 
-#Creo el fichero para despues pasarselo al programa de las graficas
-f=open('simulaciones.txt','w')
-f.write ("SIMULACIONES \n")
-f.write ("-------------- \n")
-f.close()
+
 
 
 #variables que no cambian con cada simulacion
 #rutafoto = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\1.jpg'
 #rutadatos = r'C:\Users\Jose Antonio\eclipse-workspace\prueba4\3_ann.mat'
 
-rutafoto = r'./Datos/19.jpg'
-rutadatos = r'./Datos/19_ann.mat'
+lrutafotos=[r'./Datos/1.jpg',r'./Datos/3.jpg',r'./Datos/4.jpg',r'./Datos/19.jpg',r'./Datos/22.jpg']
+lrutadatos=[r'./Datos/1_ann.mat',r'./Datos/3_ann.mat',r'./Datos/4_ann.mat',r'./Datos/19_ann.mat',r'./Datos/22_ann.mat']
+
+ldifvarianza=[0.3, 0.1, 0.01, 0.001]
+
+#rutafoto = r'./Datos/1.jpg'
+#rutadatos = r'./Datos/1_ann.mat'
 
 
 def devolverancho(rutafoto): #Uso este metodo para devolver el ancho
@@ -78,31 +81,6 @@ def esquinaaleatoria (ag,ap):
     return cpx,cpy
 
 
-datosfoto= devolverancho(rutafoto) #retorno los datos de la imagen
-ancho=(datosfoto[0])
-#print (ancho)
-#global ag
-ag = math.ceil(ancho/6) #se puede cambiar ese 6 por el numero de columnas 
-print (ag, "Area Grande")
-print (ag/10, "AG / 10")
-#print (ancho/6,ag)
-#global ap
-#ap=50
-
-maxx, maxy, tam , im= devolverancho(rutafoto)
-filas =math.ceil (maxy/ag) 
-columnas =math.ceil (maxx/ag)
-numero_imagenes= filas*columnas
-
-
-
-
-#print (filas, "Filas")
-#print (columnas, "Columnas")
-#print (numero_imagenes, "Imagenes")
-
-
-#Programa para formar la matriz (kdtrees)
 
 def devolvermatreal(ag,ap,filas,columnas,cpx,cpy):
     coordenadas =[]
@@ -193,15 +171,17 @@ def generador(filas, columnas):
                         lista.append((i,j))
             suma_filas //= 2
             suma_columnas //= 2
-        print ("uijhrilj")
-        print (lista)
+        #print ("uijhrilj")
+        #print (lista)
         return lista    
+    
+      
 
 
 
 
 
-def rellenar(numimagenactual, i):
+def rellenar(numimagenactual, i, diferencia, nombrefichero):
         
         
         
@@ -246,9 +226,9 @@ def rellenar(numimagenactual, i):
             #print ("VARIANZA MIA:"+str(varianza))
             #print ("VARIANZA REAL:"+str(varianzareal))
             
-            if (numimagenactual / numero_imagenes > 0.5 and (varianza - varianzareal) < 0.01* varianzareal):
+            if (numimagenactual / numero_imagenes > 0.5 and (varianza - varianzareal) < diferencia* varianzareal):
                 print (f"Numero de imagenes recorridas: {numimagenactual} \n con diferencia del {(varianza - varianzareal):.2f} ") 
-                f=open('simulaciones.txt','a')
+                f=open(f'./Datos analisis/simulaciones{nombrefichero}_{diferencia}.txt','a')
                 f.write (f"Simulacion {i+1} \t %.2f \t %.2f\n"%(numimagenactual/numero_imagenes,abs((varianza - varianzareal)/varianzareal))) #Para que te saque solo 2 decimales (expresiones) #abs para el valor absoluto
                 f.close()
                 
@@ -265,60 +245,97 @@ def rellenar(numimagenactual, i):
 
 
 #Programa principal
-numero_simulaciones =100
 
+numero_simulaciones =10000
 
-
-for i in range (numero_simulaciones) :
+for (rutafoto,rutadatos),diferencia in product(zip(lrutafotos,lrutadatos),ldifvarianza):
     
-    #Variables que cambian en cada simulacion (el ap y la esquina y por tanto la matriz entera)
-    ap =randint(ag//10, ag//2) #Para que el area pequena no sea float
+    nombrefichero=rutafoto.split("/")[-1] 
+    #Creo el fichero para despues pasarselo al programa de las graficas
+    f=open(f'./Datos analisis/simulaciones{nombrefichero}_{diferencia}.txt','w') 
+    f.write ("SIMULACIONES \n")
+    f.write ("-------------- \n")
+    f.close()
+    
+    datosfoto= devolverancho(rutafoto) #retorno los datos de la imagen
+    ancho=(datosfoto[0])
+    #print (ancho)
+    #global ag
+    ag = math.ceil(ancho/6) #se puede cambiar ese 6 por el numero de columnas 
+    print (ag, "Area Grande")
+    print (ag/10, "AG / 10")
+    #print (ancho/6,ag)
+    #global ap
+    #ap=50
+    
+    maxx, maxy, tam , im= devolverancho(rutafoto)
+    filas =math.ceil (maxy/ag) 
+    columnas =math.ceil (maxx/ag)
+    numero_imagenes= filas*columnas
+    
+    
+    
+    
+    #print (filas, "Filas")
+    #print (columnas, "Columnas")
+    #print (numero_imagenes, "Imagenes")
+    
+    
+    #Programa para formar la matriz (kdtrees)
     
 
-    #print (ap, "Area Pequena")
 
- 
-
-    matrix=np.zeros((filas, columnas)) # En este caso no es necesario inicializar a -1, porque no se va a rellenar 
-    mataux=matrix.copy() #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
+    for i in range (numero_simulaciones) :
+        
+        #Variables que cambian en cada simulacion (el ap y la esquina y por tanto la matriz entera)
+        ap =randint(ag//10, ag//2) #Para que el area pequena no sea float
+        
+    
+        #print (ap, "Area Pequena")
+    
+     
+    
+        matrix=np.zeros((filas, columnas)) # En este caso no es necesario inicializar a -1, porque no se va a rellenar 
+        mataux=matrix.copy() #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros
+        
+        
+        cpx, cpy =esquinaaleatoria(ag, ap)
+        #print (cpx, "cpx")
+        #print (cpy, "cpy")
     
     
-    cpx, cpy =esquinaaleatoria(ag, ap)
-    #print (cpx, "cpx")
-    #print (cpy, "cpy")
+        matrix=devolvermatreal(ag, ap, filas, columnas, cpx, cpy)
+        #print (matrix)
+    
+        listagenerador=generador(filas,columnas)
+        listagenerador= list(listagenerador)
+    
+    
+        try:
+            for j in range (numero_imagenes): #Paso i para saber porque simulacion vamos y anadirlo al fichero de salida
+                rellenar(j,i,diferencia, nombrefichero)
+        except Exception as e:
+            print (f"Simulacion {i+1} analizada")
+            #print (e)    
+    
+    #Para hacer las medias, tengo la suma pero la he dividido. Lo hago ahora
+    mediaimagenes=mediaimagenes/numero_simulaciones
+    mediadiferencia=mediadiferencia/numero_simulaciones
+    
+    print (mediaimagenes,"media imagenes")
+    
+    print (mediadiferencia,"media diferencia")
+    
+    print (max_diferencia,"maxima diferencia")
+    
+   
+    
+    f=open(f'./Datos analisis/simulaciones{nombrefichero}_{diferencia}.txt','a')
+    f.write (f"Maxima Diferencia: %.2f\n"%(max_diferencia)) #Para que te saque solo 2 decimales (expresiones)
+    f.write (f"Media Imagenes: %.2f \t Media Diferencia: %.2f\n"%(mediaimagenes,mediadiferencia)) #Para que te saque solo 2 decimales (expresiones)
+    f.close()
 
-
-    matrix=devolvermatreal(ag, ap, filas, columnas, cpx, cpy)
-    #print (matrix)
-
-    listagenerador=generador(filas,columnas)
-    listagenerador= list(listagenerador)
-
-
-    try:
-        for j in range (numero_imagenes): #Paso i para saber porque simulacion vamos y anadirlo al fichero de salida
-            rellenar(j,i)
-    except Exception as e:
-        print (f"Simulacion {i+1} analizada")
-        #print (e)    
-
-#Para hacer las medias, tengo la suma pero la he dividido. Lo hago ahora
-mediaimagenes=mediaimagenes/numero_simulaciones
-mediadiferencia=mediadiferencia/numero_simulaciones
-
-print (mediaimagenes,"media imagenes")
-
-print (mediadiferencia,"media diferencia")
-
-print (max_diferencia,"maxima diferencia")
-
-
-f=open('simulaciones.txt','a')
-f.write (f"Maxima Diferencia: %.2f\n"%(max_diferencia)) #Para que te saque solo 2 decimales (expresiones)
-f.write (f"Media Imagenes: %.2f \t Media Diferencia: %.2f\n"%(mediaimagenes,mediadiferencia)) #Para que te saque solo 2 decimales (expresiones)
-f.close()
-
-
+    creargrafica(nombrefichero, diferencia)
 
 
 

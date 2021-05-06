@@ -11,9 +11,6 @@ import pickle, sys
 
 import numpy as np
 
-import CountEmVariance 
-
-
 
 
 def varc(ag,ap,a):
@@ -96,8 +93,8 @@ def varc(ag,ap,a):
 
 
 def tras(matriz,ag,ap):
-	    ag=ag*ag
-	    ap=ap*ap
+	    #ag=ag*ag			AQUI ESTABA EL FALLO
+	    #ap=ap*ap
 	    matt= np.transpose(matriz) #hace la traspuesta
 	    vc1= varc(ag,ap,matriz) #calcula la varianza de la matriz normal
 	    #print (vc1)
@@ -109,15 +106,31 @@ def tras(matriz,ag,ap):
 	    return (vc)
 
 
-def trasnueva(matriz,ag,ap):
-	    ag=ag*ag
-	    ap=ap*ap
-	    matt= np.transpose(matriz) #hace la traspuesta
-	    vc1= CountEmVariance.varc(ag,ap,matriz) #calcula la varianza de la matriz normal
-	    #print (vc1)
-	    #print (matt)
-	    #print (matriz)
-	    vc2=CountEmVariance.varc(ag,ap,matt) #calcula la varianza de la matriz traspuesta
-	    #print (vc2)
-	    vc= (vc1+vc2)/2 #hace la media de las 2
-	    return (vc)
+
+ag=250
+ap=50
+filas=7
+columnas=6
+matriz=np.zeros((filas, columnas)) #Rellena a -1
+matriz[0][2]=1
+matriz[1][0]=5
+matriz[1][1]=3
+matriz[2][0]=4
+matriz[2][1]=3
+matriz[2][2]=3
+matriz[3][1]=2
+matriz[3][3]=4
+matriz[4][2]=2
+matriz[4][3]=4
+matriz[4][4]=4
+matriz[5][2]=3
+matriz[5][3]=3
+matriz[5][4]=3
+matriz[6][3]=2
+matriz[6][4]=2
+matriz[6][5]=2
+
+print (matriz)
+
+#print (varc(ag,ap,matriz))
+print (tras(matriz,ag,ap))

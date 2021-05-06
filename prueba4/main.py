@@ -8,7 +8,7 @@ from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Rectangle
 #from random import randomint
 from  pruebaguardarpillow5 import *
-from  calculavarianzacompuesta import tras
+from  calculavarianzacompuesta import tras, trasnueva
 from  kdtreespillow2prueba import *
 import shutil # Libreria para borrar los recortes
         
@@ -16,6 +16,7 @@ import numpy as np #Para rellenamatriz
 from itertools import product, combinations
 
 import os
+
 #from simulacion import numero_imagenes
 
 
@@ -118,9 +119,13 @@ class Root(FloatLayout):
         #ag=500
         print (ancho/6,ag)
         global ap
-        ap = int(input("Area Pequeña: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
+        ap = int(input("Lado Pequeño: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
         #ap=25
         #self.ids["lienzo"].pinta=True
+        while ap> ag:
+            print("Area Pequena se sale de Area Grande")
+            ap = int(input("Lado Pequeño: ")) 
+            
         global filas
         global columnas
         global numero_imagenes
@@ -132,6 +137,21 @@ class Root(FloatLayout):
         print(matrix, "Prueba")
         print(mataux, "Prueba2")
         
+        self.ids["Sig"].opacity=100
+        self.ids["Sig"].disabled=False  
+        
+        self.ids["Cargar"].text="Reiniciar"
+        self.ids["Cargar"].on_release= self.reset()
+       
+        
+        #Por si acaso cargas directamente ya en el programa #Si esta el load oculto no haria falta
+        self.ids["Vol"].opacity=0
+        self.ids["Vol"].disabled=True
+        
+        self.ids["Finalizar"].opacity=0
+        self.ids["Finalizar"].disabled=True   
+        
+             
     
 
     def save(self, path, filename):
@@ -215,8 +235,16 @@ class Root(FloatLayout):
             
             #matrix(listagenerador[numimagenactual])+=1
             
+            
+            
             self.varianzareal=tras(mataux,ag,ap)
             self.varianza=tras(matrix, ag,ap)
+            
+            #self.varianzanueva=trasnueva(matrix, ag,ap)
+           
+            #print ("-----PRUEBA VARIANZA------------")
+            #print (self.varianza, self.varianzanueva)
+            
             
             print (mataux,"Prueba")
             print (matrix, "Prueba2") 
@@ -259,6 +287,8 @@ class Root(FloatLayout):
         if numimagenactual == 1:
             #print ("Hola")
             self.ids["lienzo"].pinta=True
+            self.ids["Vol"].opacity=100
+            self.ids["Vol"].disabled=False  
             
         if numimagenactual == numero_imagenes:
             if self.ids["Sig"].text!="Finish":
@@ -283,6 +313,65 @@ class Root(FloatLayout):
             else:
                 shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
                 exit()
+                
+                
+    def volver(self):
+        global rutafoto
+        global numimagenactual
+        global ap
+        global matrix
+        global listagenerador
+        
+        print ("Hola")
+        
+        #porque no se puede copger la lista
+        
+        #lo he intentado con listas y con arrays
+        
+       # print (listagenerador[numimagenactual])[0]      
+        
+        #matrix[listagenerador(numimagenactual)]=0
+        
+        fila=int(listagenerador[numimagenactual-1][0]) #Me quedo con la parte entera
+        col= listagenerador[numimagenactual-1][1]
+        
+        #print (fila)
+        #print (col)
+        
+        matrix[fila][col]=0
+        
+        numimagenactual -=1
+        self.ids["lienzo"].canvas.clear()
+        
+        if numimagenactual != 0: #Si quedan imagenes por recorrer
+            fila=int(listagenerador[numimagenactual-1][0]) #Me quedo con la parte entera
+            col= listagenerador[numimagenactual-1][1]
+            matrix[fila][col]=0 #Porqwue hay que recorrer tambien la anterior
+            self.ids["mario"].source=os.path.join(ruta,f"recorte{fila}_{col}.jpg")
+       
+        else: #Para pasar de la primera imagen a la imagen completa y pedir otro ap
+            self.ids["mario"].source=rutafoto
+            self.ids["lienzo"].pinta=False
+            ap = int(input("Lado Pequeno: "))
+            while ap> ag:
+                print("Area Pequena se sale de Area Grande")
+                ap = int(input("Lado Pequeño: ")) 
+            self.ids["Vol"].opacity=0
+            self.ids["Vol"].disabled=True  
+           
+        #poner a 0 la posicion de la matriz en la que estamos
+        #poner a 0 la posicion anterior a la que estamos (hay que volverla a contar)
+        #valor num imagen actual hay que restarle 1
+        #volver a la imagen anterior    
+        
+        #si el numero imagen actual es 1, volver a la imagen completa y pedir de nuevo el ap
+    
+    
+    def reset(self):
+        print("Reinicio")
+        
+    
+    
     
     
     def generador(self,filas, columnas):
@@ -290,13 +379,13 @@ class Root(FloatLayout):
         suma_columnas = columnas//2
         suma_filas = filas//2
         while suma_filas >0 or suma_columnas > 0:
-            for i in range(0, filas, suma_filas):
-                for j in range(0, columnas, suma_columnas):
+            for i in range(0, filas, max(1,suma_filas)):
+                for j in range(0, columnas, max(1,suma_columnas)):
                     if (i,j) not in lista:
                         lista.append((i,j))
             suma_filas //= 2
             suma_columnas //= 2
-        return lista    
+        return lista     
     
     def rellenarmatriz(self, matriz, vacios):
         #Funcion a la que se le pasa la matriz que llevamos recorrida, y te tiene que devolver la matriz extrapolada, transformando las posiciones no recorridas en valores posibles (Rango del minimo al maximo de las anteriores posiciones)
@@ -324,88 +413,9 @@ class Root(FloatLayout):
         return matextra
             
 
-        #inicializamos la matriz con -1
-        """"a = np.zeros((4,4)) - 1
-        print(a.shape)
-        def todas_posibilidades(a, maximo, minimo):
-            num_f, num_c = a.shape
-            posiciones = []
-            for i,j in product(range(num_f), range(num_c)):
-                if a[i,j] == -1:
-                    posiciones.append((i,j))
-            for valores in product(range(maximo, minimo), repeat = len(posiciones)):
-                    temp = a.copy()
-                    for val, l in zip(valores, posiciones):
-                        temp[l[0], l[1]] = val
-                    yield temp
-
-        contador = 0
-        for i in (todas_posibilidades(a,2,4)):
-            contador += 1
-        print(contador)
-        #Coger aleatoriamente una y devolverla
-        
-        
-        for 
-            for i,j in product(range(5),range(3)): #Prueba
-                matriz[i,j]=        #matriz     
     
-        """
                 
-    def siguientev0(self): #Siguiente normal que recorre todas los cuadrados por orden
-        self.ids["lienzo"].canvas.clear()
-        
-        global numimagenactual                
-        global columnas
-        global numero_imagenes
-                            
-        if numimagenactual < numero_imagenes:
-            
-            self.ids["mario"].source=os.path.join(ruta,f"recorte{numimagenactual//columnas}_{numimagenactual%columnas}.jpg")
-            numimagenactual +=1
-            global ag
-            global ap
-            print (numimagenactual , numero_imagenes)
-            #self.ids["lienzo"]= MyPaintWidget() #Da igual que llegue al if siguiente porque cuando llegamos al mypaintwidget se vuelve a poner en false
-            self.varianza=tras(matrix,ag,ap)
-            self.ids["var_text"].text= str(self.varianza)
-            
-            self.estimacion=(ag/ap)*matrix.sum()* (numero_imagenes/numimagenactual)  #anadido el n de cuadrados
-            print (ag,ap,matrix.sum(), numero_imagenes,numimagenactual)
-            self.ids["var_est"].text= str(self.estimacion)
-            
-                
-                
-            
-        if numimagenactual == 1:
-            #print ("Hola")
-            self.ids["lienzo"].pinta=True
-            
-        if numimagenactual == numero_imagenes:
-            if self.ids["Sig"].text!="Finish":
-                self.ids["Sig"].text="Finish"
-                print ("calcular varianza")
-                self.varianza=tras(matrix,ag,ap)
-                self.estimacion=(ag/ap)*matrix.sum()* (numero_imagenes/numimagenactual)
-                self.ids["var_text"].text= str(self.varianza)
-                self.ids["var_est"].text= str(self.estimacion)
-                print (self.varianza)
-                #Aqui calculas la varianza pero tendras que hacer algo mas, no ? que desaparezca el boton siguiente, ...
-                f=open('resultados.txt','a')
-                f.write ("T: %d \n"%(ag))
-                f.write ("t: %d \n"%(ap)) 
-                f.write ("cpx: %d \n"%(cpx))
-                f.write ("cpy: %d \n"%(cpy))
-                f.write ("varianza: %.2f \n"%(self.varianza))
-                f.write ("estimacion: %.2f \n"%(self.estimacion))
-                rutafotoalt=rutafoto.split("\\")[-1] #Para coger el nombre de la imagen
-                f.write ("imagen: %s \n"%(rutafotoalt))
-                f.close()
-        
-            else:
-                shutil.rmtree(ruta) #Elimina los recortes antes de salir del programa
-                exit()
-                
+                  
     def guardarresultados(self):
             global ap
             global ag
@@ -484,6 +494,7 @@ class MyPaintWidget(Widget):
                 print(matrix)
                 matrix[fila][col]+=1 #matrix[fila][col]+ 1
                 cpx,cpy= devolveresquina ()
+                print (self.pos[0], self.pos[1], cpx , cpy , ag , ap , fila,col)
                 self.dimensionar(touch.x,touch.y, self.pos[0], self.pos[1], cpx, cpy, ag, ap, fila,col)
                 
                 #Color(0, 0, 0) #Para quitar el amarillo del mario

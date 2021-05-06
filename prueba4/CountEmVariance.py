@@ -130,14 +130,14 @@ def image_proc(count_files,Lx,Ly,Lprime_x,Lprime_y,samplingFraction,Nx,Ny):
 # Numero de quadrats por fila: 5
 # Numero de quadrats por columna: 5
 # Angulo de reotacion de la regilla: 0
-varN, varCav, varNPoisson, meanNhat = image_proc([1,2,1,0,0,0,1,1,0,0,1,2,2,1,1,0,1,0,1,2,3,4,1,2,3],50,30,200,120,0.25,5,5)
+"""varN, varCav, varNPoisson, meanNhat = image_proc([1,2,1,0,0,0,1,1,0,0,1,2,2,1,1,0,1,0,1,2,3,4,1,2,3],50,30,200,120,0.25,5,5)
 
 print("Estimated: " + str(meanNhat))        # --> Numero estimado de particulas contadas
 print("VarN: " + str(varN))                 # --> Varianzas N, Cav y Poisson 
 print("VarCav: " + str(varCav))
 print("VarNPoisson: " + str(varNPoisson))
 
-
+"""
 # Jose, así adapto para el calculo de la varianza general
 
 def varc(ag, ap, a):
@@ -151,3 +151,32 @@ def varc(ag, ap, a):
     temp = temp.reshape(Nx * Ny).tolist()
     print(f'(temp,  {Lprime_x}, {Lprime_y}, {Lx}, {Ly}, {samplingFraction}, {Nx}, {Ny})')
     return image_proc(temp,  Lprime_x, Lprime_y, Lx, Ly, samplingFraction, Nx, Ny)[-1]
+
+
+ag=250
+ap=50
+filas=7
+columnas=6
+matriz=np.zeros((filas, columnas)) #Rellena a -1
+matriz[0][2]=1
+matriz[1][0]=5
+matriz[1][1]=3
+matriz[2][0]=4
+matriz[2][1]=3
+matriz[2][2]=3
+matriz[3][1]=2
+matriz[3][3]=4
+matriz[4][2]=2
+matriz[4][3]=4
+matriz[4][4]=4
+matriz[5][2]=3
+matriz[5][3]=3
+matriz[5][4]=3
+matriz[6][3]=2
+matriz[6][4]=2
+matriz[6][5]=2
+ag=ag*ag
+ap=ap*ap
+
+
+print(varc(ag, ap, matriz))

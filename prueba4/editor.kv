@@ -5,9 +5,12 @@ Root:
     BoxLayout:
         orientation: 'vertical'
         BoxLayout:
-            size_hint_y: None
+        	size_hint_y: None
             height: 30
             Button:
+            	opacity: 100
+    			disabled: False
+    			id: Cargar
                 text: 'Load'
                 on_release: root.show_load()
             #Button:
@@ -17,7 +20,7 @@ Root:
         BoxLayout:
 		    size_hint_y: None
 			size_hint_x: None
-			height: 30
+			height: 20
 			
 		BoxLayout:
 			BoxLayout:
@@ -54,24 +57,23 @@ Root:
 		BoxLayout:
 		    size_hint_y: None
 			size_hint_x: None
-			height: 30		
+			height: 15		
 				
 		BoxLayout:
 			size_hint_y: None
-			height: 50
+			height: 30
 			
 			BoxLayout:
 				orientation: 'vertical'
 				Label:
 				    id: var_text
 					text: "Coeficiente"
-				Label:
-					id: var_est
-					text: "Estimacion"
-							
+											
 			BoxLayout:
 			
 			Button:
+				opacity: 0
+    			disabled: True
 				id: Sig
 				text: "Next"
 				on_release: root.siguiente() 
@@ -90,12 +92,53 @@ Root:
 			BoxLayout:
 				size_hint_x: None
 				
+		BoxLayout:
+		    size_hint_y: None
+			size_hint_x: None
+			height: 15
+				
+		
+		BoxLayout:
+			size_hint_y: None
+			height: 30
+			
+			BoxLayout:
+				orientation: 'vertical'
+				Label:
+					id: var_est
+					text: "Estimacion"
+							
+			BoxLayout:
+			
+			Button:
+				opacity: 0
+    			disabled: True
+				id: Vol
+				text: "Volver"
+				on_release: root.volver() 
+				
+			
+			BoxLayout:
+				
+			Button:
+				id: Salir
+				text: "Salir"
+				on_release: exit() 
+				
+				
+			BoxLayout:
+				size_hint_x: None
+				
+		
+	
 		
 		BoxLayout:
 		    size_hint_y: None
 			size_hint_x: None
-			height: 30
+			height: 15
 
+            
+       
             
 <LoadDialog>:
     BoxLayout:
