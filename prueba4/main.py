@@ -64,10 +64,17 @@ class Root(FloatLayout):
         self._popup.dismiss()
 
     def show_load(self):
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Load file", content=content, size_hint=(0.9, 0.9))
-        self._popup.open()
-        #self.ids["var_text"].text= "20"
+        if True:
+            content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+            self._popup = Popup(title="Load file", content=content, size_hint=(0.9, 0.9))
+            self._popup.open()
+            #self.ids["var_text"].text= "20"
+            self.entro=False
+            
+
+            #self.ids["Cargar"].on_release= self.reset()
+        else:
+            self.reset()
 
     def show_save(self):
         content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
@@ -139,10 +146,7 @@ class Root(FloatLayout):
         
         self.ids["Sig"].opacity=100
         self.ids["Sig"].disabled=False  
-        
-        self.ids["Cargar"].text="Reiniciar"
-        self.ids["Cargar"].on_release= self.reset()
-       
+              
         
         #Por si acaso cargas directamente ya en el programa #Si esta el load oculto no haria falta
         self.ids["Vol"].opacity=0
@@ -151,6 +155,9 @@ class Root(FloatLayout):
         self.ids["Finalizar"].opacity=0
         self.ids["Finalizar"].disabled=True   
         
+        self.ids["Cargar"]= Button()
+        self.ids["Cargar"].text="Reiniciar"
+        self.ids["Cargar"].bind(on_release = self.reset)
              
     
 
@@ -367,7 +374,7 @@ class Root(FloatLayout):
         #si el numero imagen actual es 1, volver a la imagen completa y pedir de nuevo el ap
     
     
-    def reset(self):
+    def reset(self, arg1 ):
         print("Reinicio")
         
     
