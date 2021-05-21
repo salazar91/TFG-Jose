@@ -147,6 +147,7 @@ Root:
         orientation: "vertical"
         FileChooserListView:
             id: filechooser
+            
 
         BoxLayout:
             size_hint_y: None
@@ -184,3 +185,85 @@ Root:
             Button:
                 text: "Save"
                 on_release: root.save(filechooser.path, text_input.text)
+                
+                
+<Widgets>:
+	ap: -100 #Por defecto
+	GridLayout:	
+		cols: 3
+		rows: 5
+		orientation: 'lr-tb'
+		#size_hint_y: .7
+		#size_hint_x: .1
+		BoxLayout:
+			size_hint_y: 0.2
+		BoxLayout:
+			size_hint_y: 0.2
+		BoxLayout:
+			size_hint_y: 0.2
+			
+		BoxLayout:
+			size_hint_y: 0.1
+			size_hint_x: 0.2
+			
+				
+		Label:
+			id: titulo
+			size_hint_y: 0.1
+			#pos_hint: {"Top": 5690}
+			size: 20,20
+			text: "Indica el Lado Pequeno"
+		
+		BoxLayout:
+			size_hint_y: 0.1
+			size_hint_x: 0.2
+		
+		BoxLayout:
+			size_hint_y: 0.1
+			size_hint_x: 0.2
+				
+		TextInput:
+			id: txtinput
+			size_hint_y: 0.1
+			#size_hint_x: None
+			#size: 600, 200 
+			#pos: 500, 300
+			
+		BoxLayout:
+			size_hint_y: 0.1
+			size_hint_x: 0.2
+	    
+	    BoxLayout:
+			size_hint_y: 0.05
+			size_hint_x: 0.2
+	    
+	    Button:
+			text: "Guardar"
+			size_hint_y: 0.05
+			#pos_hint: {"x":0.1, "y":0.1}
+			on_release: root.btn()
+		
+		BoxLayout:
+			size_hint_y: 0.05
+			size_hint_x: 0.2
+		
+		BoxLayout:
+			size_hint_y: 0.2
+		BoxLayout:
+			size_hint_y: 0.2
+		BoxLayout:
+			size_hint_y: 0.2
+
+
+<P>:
+	Label:
+		id: mensaje
+		text: "Lado Pequeno Actualizado" #Da igual porque se va a cambiar antes de abrir el pop up
+		size_hint: 0.6,0.2
+		pos_hint: {"x":0.2, "top":1}
+		
+	Button:
+		id: cerrar
+		text: "Cerrar"
+		size_hint: 0.8,0.2
+		pos_hint: {"x":0.1, "y":0.1}

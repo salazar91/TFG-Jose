@@ -5,6 +5,8 @@ from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+
 from kivy.graphics import Color, Ellipse, Rectangle
 #from random import randomint
 from  pruebaguardarpillow5 import *
@@ -15,7 +17,11 @@ import shutil # Libreria para borrar los recortes
 import numpy as np #Para rellenamatriz
 from itertools import product, combinations
 
+from functools import partial #Para argumentos por defecto (Al final no la utilizamos)
+
+
 import os
+
 
 #from simulacion import numero_imagenes
 
@@ -35,11 +41,60 @@ ap=0
 rutafoto= "" #para pasarlo despues al fichero la pongo como global
 listagenerador=[]
 
+showap=None #Tenemos que hacerlo global para que lo coja la otra funcion (showpopup) cuando la declaras en el load
 
 
-#class Boton(Button):
+
+#Para hacer el popup area pequena (Mirar para sacarlo a otro programa e importatlo)
+
+class Widgets(Popup):
+    def btn(self):
+        show_popup(self)
+
+class P(FloatLayout):
+    pass
+
+class MyApp(App):
+    def build(self):
+        return Widgets()
 
 
+
+
+def show_popup(x):
+    
+    show = P()
+    #print (int((x.ids["txtinput"].text))) #Si metes algo que no es un entero va a ir a la edxcepcion
+    global showap
+    
+    
+
+    
+    popupWindow = Popup(title="Lado Pequeno",  content=show, size_hint=(None,None), size=(400,400), auto_dismiss=True)
+    #cerrarpopup = partial(cerrarpopup, showap=showap, popupWindow=popupWindow)
+
+    def cerrarpopup(*args, **kwargs):
+        popupWindow.dismiss()
+        showap.dismiss()
+        traspopup(showap.ap)
+
+    show.ids["cerrar"].bind(on_release=cerrarpopup)
+    try:
+        temp=int(x.ids["txtinput"].text)
+        show.ids["mensaje"].text="Actualizado a:"+str(temp)
+        #Comprobacion de si ap > ag
+        #popupWindow.text=x.ids["txtinput"].text
+        
+        #text=f'{int((x.ids["txtinput"].text))}',
+    except ValueError:
+        show.ids["mensaje"].text="Error"
+        show.ids["cerrar"].text="Reintentar"
+        
+        #popupWindow = Popup(title="Ha habido un error", content=show, size_hint=(None,None), size=(400,400))
+    #if  show.ids["cerrar"].text="Reintentar" que vuelva al pop up, sino que guarde la variable - con un while al principio mejor
+    popupWindow.open()
+    showap.ap=temp
+    print (showap.ap,"TEMPPPP")
     
 
 class LoadDialog(FloatLayout):
@@ -58,17 +113,22 @@ class Root(FloatLayout):
     savefile = ObjectProperty(None)
     text_input = ObjectProperty(None)
     contador =0
+    #content= None
+    
+    
     
 
     def dismiss_popup(self):
         self._popup.dismiss()
 
     def show_load(self):
-        if True:
-            content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-            self._popup = Popup(title="Load file", content=content, size_hint=(0.9, 0.9))
+        if self.entro:
+            #if not self.content:
+            if not hasattr(self, "content"):
+                self.content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+                self._popup = Popup(title="Load file", content=self.content, size_hint=(0.9, 0.9))
             self._popup.open()
-            #self.ids["var_text"].text= "20"
+        #self.ids["var_text"].text= "20"
             self.entro=False
             
 
@@ -126,12 +186,26 @@ class Root(FloatLayout):
         #ag=500
         print (ancho/6,ag)
         global ap
-        ap = int(input("Lado Pequeño: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
+        ap=-100
+        global showap
+        
+        #inap=False
+        
+        while ap>0:
+            showap=Widgets()
+            showap.open()
+            ap=showap.ap
+            #inap=True
+        #ap = int(input("Lado Pequeño: ")) #No esta permitido que el cuadrado pequeño sea mayor o igual que el cuadrado grande
         #ap=25
         #self.ids["lienzo"].pinta=True
-        while ap> ag:
+        """while ap> ag:
             print("Area Pequena se sale de Area Grande")
             ap = int(input("Lado Pequeño: ")) 
+        """
+        print (ap, "AREA PQUENAAAAAA")
+        
+    def traspopup(self, ap):
             
         global filas
         global columnas
@@ -155,9 +229,20 @@ class Root(FloatLayout):
         self.ids["Finalizar"].opacity=0
         self.ids["Finalizar"].disabled=True   
         
-        self.ids["Cargar"]= Button()
+        #self.ids["Cargar"]= Button()
         self.ids["Cargar"].text="Reiniciar"
-        self.ids["Cargar"].bind(on_release = self.reset)
+        
+        
+        """    
+        print (self.ids["Cargar"].on_release)
+        self.entro== False
+        self.ids["Cargar"].text="Reiniciar"
+        self.ids["Cargar"].on_release = self.reset
+        print ("Cambiada la funcion")
+        print (self.ids["Cargar"].on_release)
+        
+        """
+        
              
     
 
@@ -374,9 +459,60 @@ class Root(FloatLayout):
         #si el numero imagen actual es 1, volver a la imagen completa y pedir de nuevo el ap
     
     
-    def reset(self, arg1 ):
-        print("Reinicio")
+    def reset(self ): #Lo pongo aqui por si acaso no lo esta leyendo
         
+        global ruta
+        global matrix
+        global mataux
+        global numimagenactual 
+        global columnas
+        global filas
+        global numero_imagenes
+        global ag
+        global ap
+        global rutafoto
+        global listagenerador
+        
+        #Vuelvo a inicializarf las variables como al principio del main
+        ruta= "."
+        ruta= os.path.join(ruta,"Recortes")
+
+        matrix=[] #La matriz que hay que pintar
+        mataux=[]
+
+        numimagenactual =0 #El anterior contador de la imagen por la que ibamos no la pongo porque da fallos extranhos
+        columnas=0 
+        filas=0
+        numero_imagenes=0
+        ag=0
+        ap=0
+        rutafoto= "" #para pasarlo despues al fichero la pongo como global
+        listagenerador=[]
+        
+        
+        print("Reinicio")
+        if os.path.exists(ruta):
+            shutil.rmtree(ruta)
+        #Borrar datos de pantalla
+        self.ids["var_text"].text= ""
+        self.ids["var_est"].text= ""
+        #del LoadDialog.ids["filechooser"]
+        del self._popup
+        #content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        
+        #Quitar los botones
+        self.ids["Sig"].opacity=0
+        self.ids["Sig"].disabled=True  
+        
+        self.ids["Finalizar"].opacity=0
+        self.ids["Finalizar"].disabled=True  
+        
+        self.ids["Vol"].opacity=0
+        self.ids["Vol"].disabled=True  
+        
+        Editor().stop()
+        Editor().run()
+        shutil.rmtree(ruta)
     
     
     
