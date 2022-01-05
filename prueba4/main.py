@@ -77,16 +77,19 @@ class Root(FloatLayout):
     def load(self, path, filename):
         print(filename[0])
         extension = os.path.splitext(filename[0])[1] #Para coger la extension (Con el import os)
+        nombrefichero=os.path.splitext(filename[0])[0]
         print (extension)
-        #*****************
+
         #Si la extension no es jpg, pasarlo a jpg (el nombre y la imagen)
-        #if extension != ".jpg":
-        #
-        #
-        #
-        #
-        #*****************    
-            
+        if extension != ".jpg":
+            if extension == ".png" or ".jpge" or ".gif":
+                print ("Transforma a jpg")
+                im = Image.open(filename[0])
+                im.save(nombrefichero+".jpg", quality=95)
+                filename[0]=nombrefichero+".jpg"
+            else:
+                print ("Formato Incorrecto")   
+                #volver al inicio sin cargar nada
             
         #Para reescribir el fichero de coordenadas
         f=open('coordenadas.txt','w')
@@ -132,7 +135,7 @@ class Root(FloatLayout):
         numero_imagenes, filas, columnas=recortar_imagen(ag, ap, rutafoto)
         global matrix
         global mataux
-        matrix=np.zeros((filas, columnas)) #Rellena a -1
+        matrix=np.zeros((filas, columnas)) #Rellena 
         mataux=np.zeros((filas, columnas)) #matriz con los valores reales en las posiciones recorridas y con ceros en el resto para calcular su varianza y calcular con la que estamos calculando nosotros. La inicializamos de la misma forma que la otra
         print(matrix, "Prueba")
         print(mataux, "Prueba2")
@@ -273,11 +276,11 @@ class Root(FloatLayout):
                 self.estimacion =-1
                 
             coeficiente_error=self.varianzareal/self.estimacion**2
-            self.ids["var_text"].text= "Coeficiente: "+str(coeficiente_error)
+            self.ids["var_text"].text= "Coeficiente: "+str(round(coeficiente_error,2))
 
                 
             print (ag,ap,matrix.sum(), numero_imagenes,numimagenactual)
-            self.ids["var_est"].text= "Estimacion: "+str(self.estimacion)
+            self.ids["var_est"].text= "Estimacion: "+str(round(self.estimacion,2))
             numimagenactual +=1
 
             
@@ -308,6 +311,7 @@ class Root(FloatLayout):
                 f.write ("cpy: %d \n"%(cpy))
                 f.write ("varianza: %.2f \n"%(self.varianza))
                 f.write ("estimacion: %.2f \n"%(self.estimacion))
+                f.write ("archivo: %s \n"%(rutafoto))
                 f.close()
         
             else:
@@ -429,6 +433,7 @@ class Root(FloatLayout):
             f.write ("cpy: %d \n"%(cpy))
             f.write ("varianza: %.2f \n"%(self.varianza))
             f.write ("estimacion: %.2f \n"%(self.estimacion))
+            f.write ("archivo: %s \n"%(rutafoto))
             f.close()
             
             exit() 
@@ -445,26 +450,47 @@ class MyPaintWidget(Widget):
     def dimensionar (self, touchx, touchy, ex, ey, cpx, cpy, ag, ap, fila, columna):
         
         print ("Inicio")
-        #print (touchx,touchy)
-        
+        print ("FASE 0")
+        print (touchx,touchy)
+        print ("ex",ex)
+        print ("ey",ey)
         #sacar la coordenadada en la imagen dimensionada (no en el programa)
         coordx=touchx - ex
         coordy=touchy - ey
+        
+        print ("FASE 1")
+        print (coordx, coordy)
+        print(ap/self.size[0])
+        print(ap/self.size[1])
         
         #Dimensionar la imagen (area p con dimensiones por defecto 600,00)
         #print(self.size)
         coordx=coordx*ap/self.size[0] #anchura del cuadrado en el que se presenta la imagen (x)
         coordy=coordy*ap/self.size[1] #altura del cuadrado en el que se presenta la imagen (y)
         
+        print ("FASE 2")
+        print (coordx, coordy)
+        
+        print ("cpx",cpx)
+        print ("cpy",cpy)
+        
         #Poner la coordenada repsecto al ag
         coordx=coordx+cpx
         coordy=coordy+cpy
+        
+        print ("FASE 3")
+        print (coordx, coordy)
+        print ("fila",fila)
+        print ("columna",columna)
         
         #Sabiendo la fila y la columna poner la coordenada real en la imagen
         global filas
         filaaux=filas-1-fila #filaaux para coger la fila para calcular bien la coordenada empezando desde arriba
         coordx=coordx+ag*columna
         coordy=coordy+ag*filaaux
+        
+        print ("FASE 4")
+        print (coordx, coordy)
         
         
         print ("FINAL")
