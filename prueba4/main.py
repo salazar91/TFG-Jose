@@ -82,13 +82,15 @@ class Root(FloatLayout):
 
         #Si la extension no es jpg, pasarlo a jpg (el nombre y la imagen)
         if extension != ".jpg":
-            if extension == ".png" or ".jpge" or ".gif":
+            if extension == ".png" or extension ==".jpge" or extension ==".gif":
                 print ("Transforma a jpg")
                 im = Image.open(filename[0])
                 im.save(nombrefichero+".jpg", quality=95)
                 filename[0]=nombrefichero+".jpg"
-            else:
-                print ("Formato Incorrecto")   
+            else:   #Si el formato no es una imagen
+                print ("Formato Incorrecto") 
+                self.dismiss_popup()    #Volvemos al inicio
+                return 0  
                 #volver al inicio sin cargar nada
             
         #Para reescribir el fichero de coordenadas
