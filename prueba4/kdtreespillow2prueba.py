@@ -75,7 +75,7 @@ def devolvermatreal(ag,ap,filas,columnas,cpx,cpy):
 			for i in indices:
 				ptemp= coordenadas[i]
 				print (ptemp)
-				if ptemp[1] != cpy-ap/2 and ptemp[0] != cpx-ap/2:
+				if ptemp[1] != cpy-ap/2 and ptemp[0] != cpx-ap/2: #Para no contar el punto sobre la linea
 					puntos = puntos +1
 			
 			matrix[x][y]=matrix[x][y] +puntos
