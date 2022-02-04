@@ -1,5 +1,5 @@
-#+TITLE : PhotoCount - Servicio Web para el conteo de multitudes
-#+AUTHOR: Jose Antonio Salazar Carriles
+# TITLE : PhotoCount - Servicio Web para el conteo de multitudes
+# AUTHOR: Jose Antonio Salazar Carriles
 
 PhotoCount es un software desarrollado para el conteo de multitudes en imagenes buscando estimar el numero de personas totales de la misma de una forma sencilla mediante el conteo de partes de la imagen, siendo una variación y mejora del software COUNTEM de la Universidad de Cantabria que aplicaba procesos parecidos.
 
