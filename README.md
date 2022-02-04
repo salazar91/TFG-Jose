@@ -12,8 +12,8 @@ Se esta trabajando en terminar de tener todas las funcionalidades activas para c
 
 ### EJECUCION (Para todos los usuarios)
 
-Ejecutar main.py (Se instalaran automaticamente las dependencias necesarias)
+Ejecutar main.py (Se instalaran automaticamente las dependencias necesarias).
 
 ### REQUISITOS
 
-Tener activa una version de Python 3
+Tener activa una version de Python 3.
