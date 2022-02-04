@@ -12,7 +12,12 @@ Pagina de soporte en construccion.
 
 Se esta trabajando en terminar de tener todas las funcionalidades activas para comenzar a comercializar el producto.
 
+#### [2022-02-04] Version inicial para el desarrollo de nuevas funcionalidades 
+
+Desarrollo de logo
+
 ### EJECUCION (Para todos los usuarios)
+##### Advertencia: Esta rama es inestable
 
 Ejecutar main.py (Se instalaran automaticamente las dependencias necesarias).
 
