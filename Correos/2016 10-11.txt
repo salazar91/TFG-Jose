@@ -1,9 +1,0 @@
-El dia 11 de Octubre de 2016 hemos tenido una reunión en la que:
-
-	- Primero hemos hablado de la posible introduccion de la memoria, asi como de los requisitos y la metodologia empleada en el software.
-
-	- Despues hemos visto un ejemplo del software Countem de Unican, y despues hemos discutido las distintas mejoras que puede tener nuestro software respecto a este (Imagenes que roten automaticamente, cuadrados creados automaticamente (6 cabezas es lo mejor), en vez de contar cabezas por cuadro pulsar en las cabezas, que el error te lo de en cada cuadrado (en directo), no solo al final.
-
-	- Mas tarde hemos visto un ejemplo de como utilizar Kivy para nuestra interfaz.
-
-	- Por último hemos acordado comenzar con la interfaz, que tendra una serie de menus por diseñar, y deberia estar acabada para mediados de Noviembre.
