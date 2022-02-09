@@ -104,17 +104,3 @@ def tras(matriz,ag,ap):
 	    #print (vc2)
 	    vc= (vc1+vc2)/2 #hace la media de las 2
 	    return (vc)
-
-
-def trasnueva(matriz,ag,ap):
-	    ag=ag*ag
-	    ap=ap*ap
-	    matt= np.transpose(matriz) #hace la traspuesta
-	    vc1= CountEmVariance.varc(ag,ap,matriz) #calcula la varianza de la matriz normal
-	    #print (vc1)
-	    #print (matt)
-	    #print (matriz)
-	    vc2=CountEmVariance.varc(ag,ap,matt) #calcula la varianza de la matriz traspuesta
-	    #print (vc2)
-	    vc= (vc1+vc2)/2 #hace la media de las 2
-	    return (vc)
