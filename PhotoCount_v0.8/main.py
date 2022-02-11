@@ -39,7 +39,7 @@ from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Rectangle
 #from random import randomint
 from  pruebaguardarpillow5 import *
-from  calculavarianzacompuesta import tras, trasnueva
+from  calculavarianzacompuesta import tras
 from  kdtreespillow2prueba import *
 import shutil # Libreria para borrar los recortes
         
